@@ -1,0 +1,8 @@
+#list-container{
+  display: flex;
+  flex-direction: column;
+}
+
+.list-content{
+  display: flex;
+}

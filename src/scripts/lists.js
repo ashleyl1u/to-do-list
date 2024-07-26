@@ -1,6 +1,4 @@
 
-
-
 class List {
   constructor(title){
     this._title = title;
@@ -31,11 +29,39 @@ export function renderLists() {
   const listContainer = document.getElementById('list-container');
   listContainer.innerHTML = '';
 
-  lists.forEach((list) =>{
-    const listBtn = document.createElement('button');
+  lists.forEach((list, index) =>{
+    const listContent = document.createElement('div');
+    listContent.classList.add('list-content');
+
+    const listBtn = document.createElement('div');
     listBtn.textContent = list.title;
-    listContainer.appendChild(listBtn);
+
+    const listDeleteBtn = document.createElement('button');
+    listDeleteBtn.textContent = 'x';
+    listDeleteBtn.classList.add('delete-list-btn');
+    listDeleteBtn.setAttribute('id', index);
+
+
+    listContent.appendChild(listBtn);
+    listContent.appendChild(listDeleteBtn);
+
+    listContainer.appendChild(listContent);
   });
+
+  addListListeners();
+}
+
+function addListListeners(){
+  document.querySelectorAll('.delete-list-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      removeList(btn.getAttribute('id'));
+    });
+  });
+}
+
+function removeList(index) {
+  lists.splice(index,1);
+  renderLists();
 }
 
 
