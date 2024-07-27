@@ -1,8 +1,9 @@
 
-class List {
+export class List {
   constructor(title){
-    this._title = title;
-    this._tasks = [];
+    this.title = title;
+    this.tasks = [];
+    this.completedTasks = [];
   }
 
   get tasks(){
@@ -19,6 +20,14 @@ class List {
 
   set title(title){
     this._title = title;
+  }
+
+  get completedTasks(){
+    return this._completedTasks;
+  }
+
+  set completedTasks(completedTasks){
+    this._completedTasks = completedTasks;
   }
 }
 
