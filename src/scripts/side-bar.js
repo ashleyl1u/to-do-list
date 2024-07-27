@@ -1,5 +1,6 @@
 
-import { renderLists, openOverlay } from "./lists";
+import { renderLists , renderNewListForm } from "./lists";
+import {openOverlay} from './overlay';
 import '../styles/side-bar.css';
 
 export function renderSideBar() {
@@ -20,6 +21,7 @@ export function renderSideBar() {
 
   document.getElementById('new-list-btn').addEventListener('click', () => {
     openOverlay();
+    renderNewListForm();
   });
   
 }

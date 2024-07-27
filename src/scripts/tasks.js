@@ -1,5 +1,6 @@
 
 import '../styles/tasks.css';
+import { openOverlay, closeOverlay} from './overlay';
 
 export class Task{
   constructor(title, note = ''){
@@ -50,15 +51,24 @@ export function renderContent(list) {
 
   document.getElementById('content').appendChild(taskContainer);
   document.getElementById('content').appendChild(completedTaskContainer);
-  
-  addContentListeners();
+
+  addContentListeners(list);
 
   
   renderTasks(list);
 
-  
-  
 }
+
+function addContentListeners(list){
+
+  document.getElementById('new-task-btn').addEventListener('click', () => {
+    openOverlay();
+    renderNewTaskForm(list);
+  })
+}
+
+
+
 
 function renderTasks (list) {
   const tasks = list.tasks;
@@ -147,14 +157,80 @@ function addTaskListeners(list){
 
 function updateTaskLists(index, removeArr, addArr) {
   const removedTask = removeArr.splice(index, 1);
-  addArr.unshift(removedTask[0]);
+  addArr.push(removedTask[0]);
 
 }
 
-function addContentListeners(){
 
-  document.getElementById('new-task-btn').addEventListener('click', () => {
-    console.log('here');
+function renderNewTaskForm(list){
+  const newTaskForm = document.createElement('form');
+  newTaskForm.setAttribute('id', 'new-task-form');
+
+  const taskTitleInput = document.createElement('input');
+  taskTitleInput.placeholder = 'Task Title';
+  taskTitleInput.setAttribute('id', 'task-title-input');
+
+  const errorMsg = document.createElement('div');
+  errorMsg.setAttribute('id', 'task-title-error-msg');
+
+  const taskNoteInput = document.createElement('input');
+  taskNoteInput.placeholder = 'Note';
+  taskNoteInput.setAttribute('id', 'task-note-input');
+
+  const btnContainer = document.createElement('div');
+  
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.textContent = 'cancel';
+  cancelBtn.setAttribute('id', 'task-cancel-btn');
+  cancelBtn.setAttribute('type', 'reset');
+
+  const formBtn = document.createElement('button');
+  formBtn.textContent = 'Enter';
+  formBtn.setAttribute('id', 'task-submit-btn');
+
+  btnContainer.appendChild(cancelBtn);
+  btnContainer.appendChild(formBtn);
+
+  newTaskForm.appendChild(taskTitleInput);
+  newTaskForm.appendChild(taskNoteInput);
+  newTaskForm.appendChild(errorMsg);
+  newTaskForm.appendChild(btnContainer);
+
+
+  document.getElementById('overlay').innerHTML ='';
+  document.getElementById('overlay').appendChild(newTaskForm);
+
+  addNewTaskListeners(list);
+}
+
+function addNewTaskListeners(list){
+  document.getElementById('task-cancel-btn').addEventListener('click',() => {
+    closeOverlay();
+  })
+
+  document.getElementById('new-task-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const taskTitle = document.getElementById('task-title-input').value;
+    const taskNote = document.getElementById('task-note-input').value;
+
+    if(taskTitle === ''){
+      document.getElementById('task-title-error-msg').textContent = '*Required';
+    }
+    else{
+      list.tasks.push(new Task(taskTitle, taskNote));
+      renderTasks(list);
+      resetNewTaskForm();
+      closeOverlay();
+    }
+    
   })
 }
+
+function resetNewTaskForm(){
+  document.getElementById('new-task-form').reset();
+}
+
+
 

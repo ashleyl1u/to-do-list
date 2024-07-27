@@ -1,3 +1,5 @@
+import { closeOverlay } from "./overlay";
+
 
 export class List {
   constructor(title){
@@ -75,7 +77,9 @@ function removeList(index) {
 
 
 
-export function renderOverlay () {
+
+
+export function renderNewListForm(){
   const newListForm = document.createElement('form');
   newListForm.setAttribute('id','new-list-form');
 
@@ -86,7 +90,7 @@ export function renderOverlay () {
   nameInput.setAttribute('id', 'list-name-input');
 
   const errorMsg = document.createElement('div');
-  errorMsg.setAttribute('id', 'error');
+  errorMsg.setAttribute('id', 'list-name-error-msg');
 
   const formBtn = document.createElement('button');
   formBtn.textContent = 'Enter';
@@ -104,20 +108,14 @@ export function renderOverlay () {
   newListForm.appendChild(formBtn);
   newListForm.appendChild(cancelBtn);
 
+  document.getElementById('overlay').innerHTML ='';
+  document.getElementById('overlay').appendChild(newListForm);
 
-  const overlay = document.createElement('div');
-  overlay.classList.add('overlay');
-
-  overlay.appendChild(newListForm);
-
-  document.body.appendChild(overlay);
-
-  addOverlayListeners();
-  
+  addNewListListeners();
 }
 
 
-function addOverlayListeners() {
+function addNewListListeners() {
   document.getElementById('list-cancel-btn').addEventListener('click', () => {
     closeOverlay();
     resetForm();
@@ -128,7 +126,7 @@ function addOverlayListeners() {
     const listName = document.getElementById('list-name-input').value;
     
     if(listName === ''){
-      document.getElementById('error').textContent = '*Required';
+      document.getElementById('list-name-error-msg').textContent = '*Required';
     }
     else{
       resetForm();
@@ -139,18 +137,9 @@ function addOverlayListeners() {
     
   });
 
-
   document.getElementById('list-name-input').addEventListener('focus', () => {
-    document.getElementById('error').textContent = '';
+    document.getElementById('list-name-error-msg').textContent = '';
   });
-}
-
-export function openOverlay(){
-  document.querySelector('.overlay').style.display = 'block';
-}
-
-function closeOverlay(){
-  document.querySelector('.overlay').style.display = 'none';
 }
 
 
@@ -161,5 +150,5 @@ function addList (listName){
 
 function resetForm(){
   document.getElementById('list-name-input').value = '';
-  document.getElementById('error').textContent= '';
+  document.getElementById('list-name-error-msg').textContent= '';
 }
