@@ -1,4 +1,5 @@
 import { closeOverlay } from "./overlay";
+import { renderContent } from "./tasks";
 
 
 export class List {
@@ -43,6 +44,7 @@ export function renderLists() {
   lists.forEach((list, index) =>{
     const listContent = document.createElement('div');
     listContent.classList.add('list-content');
+    listContent.setAttribute('id', index);
 
     const listBtn = document.createElement('div');
     listBtn.textContent = list.title;
@@ -64,8 +66,15 @@ export function renderLists() {
 
 function addListListeners(){
   document.querySelectorAll('.delete-list-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation(); 
       removeList(btn.getAttribute('id'));
+    });
+  });
+
+  document.querySelectorAll('.list-content').forEach((list) => {
+    list.addEventListener('click', () => {
+      renderContent(lists[list.getAttribute('id')]);
     });
   });
 }

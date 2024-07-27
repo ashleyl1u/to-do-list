@@ -28,6 +28,7 @@ export class Task{
 
 
 export function renderContent(list) {
+  document.getElementById('content').innerHTML='';
   const tasksHeader = document.createElement('div');
   tasksHeader.setAttribute('id', 'tasks-header');
 
@@ -49,6 +50,7 @@ export function renderContent(list) {
   const completedTaskContainer = document.createElement('div');
   completedTaskContainer.setAttribute('id', 'completed-task-container');
 
+  
   document.getElementById('content').appendChild(taskContainer);
   document.getElementById('content').appendChild(completedTaskContainer);
 
