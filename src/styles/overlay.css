@@ -15,11 +15,19 @@
   transform: translate(-50%, -50%);
 }
 
-#new-task-form{
+#task-form{
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
+}
+
+#task-submit-btn{
+  display: block;
+}
+
+#task-update-btn{
+  display: none;
 }

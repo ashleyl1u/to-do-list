@@ -65,7 +65,7 @@ function addContentListeners(list){
 
   document.getElementById('new-task-btn').addEventListener('click', () => {
     openOverlay();
-    renderNewTaskForm(list);
+    renderTaskForm(list, 'add', 'n/a');
   })
 }
 
@@ -78,6 +78,7 @@ function renderTasks (list) {
 
   document.getElementById('task-container').innerHTML = '';
   tasks.forEach((task, index) =>{
+
     const taskContent = document.createElement('div');
     taskContent.classList.add('task-content');
 
@@ -97,8 +98,29 @@ function renderTasks (list) {
     taskInfo.appendChild(taskTitle);
     taskInfo.appendChild(taskNote);
 
+
+    const btnContainer = document.createElement('div');
+    btnContainer.classList.add('task-btn-container');
+
+    const taskDeleteBtn = document.createElement('button');
+    taskDeleteBtn.textContent = 'x';
+    taskDeleteBtn.classList.add('task-delete-btn');
+    taskDeleteBtn.setAttribute('id', `unchecked-${index}`);
+
+    const taskEditBtn = document.createElement('button');
+    taskEditBtn.textContent = 'E';
+    taskEditBtn.classList.add('task-edit-btn');
+    taskEditBtn.setAttribute('id', `unchecked-${index}`);
+
+    btnContainer.appendChild(taskEditBtn);
+    btnContainer.appendChild(taskDeleteBtn);
+    
+
+
+
     taskContent.appendChild(checkbox);
     taskContent.appendChild(taskInfo);
+    taskContent.appendChild(btnContainer);
 
     document.getElementById('task-container').appendChild(taskContent);
     
@@ -129,14 +151,33 @@ function renderTasks (list) {
     taskInfo.appendChild(taskTitle);
     taskInfo.appendChild(taskNote);
 
+
+    const btnContainer = document.createElement('div');
+    btnContainer.classList.add('task-btn-container');
+
+    const taskDeleteBtn = document.createElement('button');
+    taskDeleteBtn.textContent = 'x';
+    taskDeleteBtn.classList.add('task-delete-btn');
+    taskDeleteBtn.setAttribute('id', `checked-${index}`);
+
+    const taskEditBtn = document.createElement('button');
+    taskEditBtn.textContent = 'E';
+    taskEditBtn.classList.add('task-edit-btn');
+    taskEditBtn.setAttribute('id', `checked-${index}`);
+
+    btnContainer.appendChild(taskEditBtn);
+    btnContainer.appendChild(taskDeleteBtn);
+
     taskContent.appendChild(checkbox);
     taskContent.appendChild(taskInfo);
+    taskContent.appendChild(btnContainer);
 
     document.getElementById('completed-task-container').appendChild(taskContent);
   });
 
   
   addTaskListeners(list);
+  //addCompleteTaskListeners(list.tasks);
 }
 
 function addTaskListeners(list){
@@ -155,7 +196,47 @@ function addTaskListeners(list){
       renderTasks(list);
     });
   });
+
+  document.querySelectorAll('.task-delete-btn').forEach((btn) =>{
+    btn.addEventListener('click', () => {
+      const btnId = btn.getAttribute('id');
+      const btnInfo = btnId.split('-');
+
+      if(btnInfo[0] === 'unchecked'){
+        list.tasks.splice(btnInfo[1],1);
+      }
+      else{
+        list.completedTasks.splice(btnInfo[1],1);
+      }
+      renderTasks(list);
+    });
+  });
+
+
+  document.querySelectorAll('.task-edit-btn').forEach((btn) =>{
+    btn.addEventListener('click', () => {
+      //continue: make edit button for the tasks
+      const btnInfo = btn.getAttribute('id').split('-');
+      const taskList = btnInfo[0] === 'unchecked' ? list.tasks : list.completedTasks;
+      const taskIndex = btnInfo[1];
+
+      openOverlay();
+      renderTaskForm(list, 'update', taskList[taskIndex]);
+      fillInUpdateTaskForm(taskList[taskIndex]);
+    })
+  })
+
+  
+  
 }
+
+function fillInUpdateTaskForm (taskInfo){
+  document.getElementById('task-title-input').value = taskInfo.title;
+  document.getElementById('task-note-input').value = taskInfo.note;
+}
+
+
+
 
 function updateTaskLists(index, removeArr, addArr) {
   const removedTask = removeArr.splice(index, 1);
@@ -164,9 +245,9 @@ function updateTaskLists(index, removeArr, addArr) {
 }
 
 
-function renderNewTaskForm(list){
+function renderTaskForm(list, type, taskInfo){
   const newTaskForm = document.createElement('form');
-  newTaskForm.setAttribute('id', 'new-task-form');
+  newTaskForm.setAttribute('id', 'task-form');
 
   const taskTitleInput = document.createElement('input');
   taskTitleInput.placeholder = 'Task Title';
@@ -187,12 +268,30 @@ function renderNewTaskForm(list){
   cancelBtn.setAttribute('id', 'task-cancel-btn');
   cancelBtn.setAttribute('type', 'reset');
 
-  const formBtn = document.createElement('button');
-  formBtn.textContent = 'Enter';
-  formBtn.setAttribute('id', 'task-submit-btn');
+  const submitBtn = document.createElement('button');
+  submitBtn.textContent = 'Enter';
+  submitBtn.setAttribute('id', 'task-submit-btn');
+  submitBtn.setAttribute('name', 'action');
+  submitBtn.setAttribute('value', 'add');
+
+  const updateBtn = document.createElement('button');
+  updateBtn.textContent = 'Update';
+  updateBtn.setAttribute('id', 'task-update-btn');
+  updateBtn.setAttribute('name', 'action');
+  updateBtn.setAttribute('value', 'update');
+
+  if(type === 'add'){
+    submitBtn.style.display = 'block';
+    updateBtn.style.display = 'none';
+  }
+  if (type === 'update'){
+    submitBtn.style.display = 'none';
+    updateBtn.style.display = 'block';
+  }
 
   btnContainer.appendChild(cancelBtn);
-  btnContainer.appendChild(formBtn);
+  btnContainer.appendChild(submitBtn);
+  btnContainer.appendChild(updateBtn);
 
   newTaskForm.appendChild(taskTitleInput);
   newTaskForm.appendChild(taskNoteInput);
@@ -203,16 +302,18 @@ function renderNewTaskForm(list){
   document.getElementById('overlay').innerHTML ='';
   document.getElementById('overlay').appendChild(newTaskForm);
 
-  addNewTaskListeners(list);
+  addTaskFormListeners(list, taskInfo);
 }
 
-function addNewTaskListeners(list){
+function addTaskFormListeners(list, taskInfo){
   document.getElementById('task-cancel-btn').addEventListener('click',() => {
     closeOverlay();
   })
 
-  document.getElementById('new-task-form').addEventListener('submit', (e) => {
+  document.getElementById('task-form').addEventListener('submit', (e) => {
     e.preventDefault();
+
+    const action = e.submitter.value;
 
     const taskTitle = document.getElementById('task-title-input').value;
     const taskNote = document.getElementById('task-note-input').value;
@@ -221,17 +322,34 @@ function addNewTaskListeners(list){
       document.getElementById('task-title-error-msg').textContent = '*Required';
     }
     else{
-      list.tasks.push(new Task(taskTitle, taskNote));
-      renderTasks(list);
-      resetNewTaskForm();
-      closeOverlay();
+      if(action === 'add'){
+      
+        list.tasks.push(new Task(taskTitle, taskNote));
+        renderTasks(list);
+        resetTaskForm();
+        closeOverlay();
+      
+      }
+
+      if (action === 'update'){
+        taskInfo.title = taskTitle;
+        taskInfo.note = taskNote;
+        renderTasks(list);
+        resetTaskForm();
+        closeOverlay();
+      }
     }
+
     
-  })
+
+    
+    
+  });
+
 }
 
-function resetNewTaskForm(){
-  document.getElementById('new-task-form').reset();
+function resetTaskForm(){
+  document.getElementById('task-form').reset();
 }
 
 
