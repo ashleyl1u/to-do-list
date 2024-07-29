@@ -1,5 +1,5 @@
 import { closeOverlay } from "./overlay";
-import { renderContent } from "./tasks";
+import { renderContent , renderTasks} from "./tasks";
 
 
 export class List {
@@ -34,7 +34,7 @@ export class List {
   }
 }
 
-export let lists = [new List('Athena')];
+export let lists = [];
 
 
 export function renderLists() {
@@ -74,7 +74,9 @@ function addListListeners(){
 
   document.querySelectorAll('.list-content').forEach((list) => {
     list.addEventListener('click', () => {
+      document.getElementById('content').innerHTML='';
       renderContent(lists[list.getAttribute('id')]);
+      renderTasks(lists[list.getAttribute('id')]);
     });
   });
 }
