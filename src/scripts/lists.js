@@ -34,7 +34,16 @@ export class List {
   }
 }
 
-export let lists = [];
+
+let listsString = localStorage.getItem('lists');
+export let lists = JSON.parse(listsString);
+
+
+if (lists === null){
+  console.log('nothing');
+  lists = [];
+}
+
 
 
 export function renderLists() {
@@ -47,7 +56,7 @@ export function renderLists() {
     listContent.setAttribute('id', index);
 
     const listBtn = document.createElement('div');
-    listBtn.textContent = list.title;
+    listBtn.textContent = list._title;
 
     const listDeleteBtn = document.createElement('button');
     listDeleteBtn.textContent = 'x';
@@ -84,6 +93,7 @@ function addListListeners(){
 function removeList(index) {
   lists.splice(index,1);
   renderLists();
+  localStorage.setItem('lists', JSON.stringify(lists));
 }
 
 
@@ -156,6 +166,7 @@ function addNewListListeners() {
 
 function addList (listName){
   lists.push(new List(listName));
+  localStorage.setItem('lists', JSON.stringify(lists));
   
 }
 

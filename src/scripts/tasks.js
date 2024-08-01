@@ -1,6 +1,7 @@
 
 import '../styles/tasks.css';
 import { openOverlay, closeOverlay} from './overlay';
+import { lists } from './lists';
 
 export class Task{
   constructor(title, note = ''){
@@ -34,10 +35,11 @@ export function renderContent(list) {
   tasksHeader.classList.add('tasks-header');
 
   const listName = document.createElement('h1');
-  listName.textContent = list.title;
+  listName.textContent = list._title;
+
 
   const newTaskBtn = document.createElement('button');
-  newTaskBtn.setAttribute('id',`new-task-btn-${list.title}`);
+  newTaskBtn.setAttribute('id',`new-task-btn-${list._title}`);
   newTaskBtn.classList.add('new-task-btn');
   newTaskBtn.textContent = '+ new task';
 
@@ -47,10 +49,10 @@ export function renderContent(list) {
   listContentContainer.appendChild(tasksHeader);
 
   const taskContainer = document.createElement('div');
-  taskContainer.setAttribute('id',  `uncompleted-task-container-${list.title}`);
+  taskContainer.setAttribute('id',  `uncompleted-task-container-${list._title}`);
 
   const completedTaskContainer = document.createElement('div');
-  completedTaskContainer.setAttribute('id', `completed-task-container-${list.title}`);
+  completedTaskContainer.setAttribute('id', `completed-task-container-${list._title}`);
 
   
   listContentContainer.appendChild(taskContainer);
@@ -65,7 +67,7 @@ export function renderContent(list) {
 
 function addContentListeners(list){
 
-  document.getElementById(`new-task-btn-${list.title}`).addEventListener('click', () => {
+  document.getElementById(`new-task-btn-${list._title}`).addEventListener('click', () => {
     openOverlay();
     renderTaskForm(list, 'add', 'n/a');
   });
@@ -79,7 +81,7 @@ function renderUncompletedTasks(task, index, list){
   taskContent.classList.add('task-content');
 
   const checkbox = document.createElement('div');
-  checkbox.classList.add( `checkbox-unchecked-${list.title}`);
+  checkbox.classList.add( `checkbox-unchecked-${list._title}`);
   checkbox.classList.add( `checkbox-unchecked`);
   checkbox.setAttribute('id', index);
 
@@ -87,10 +89,10 @@ function renderUncompletedTasks(task, index, list){
   taskInfo.classList.add('task-info');
 
   const taskTitle = document.createElement('h4');
-  taskTitle.textContent = task.title;
+  taskTitle.textContent = task._title;
 
   const taskNote = document.createElement('h5');
-  taskNote.textContent = task.note;
+  taskNote.textContent = task._note;
 
   taskInfo.appendChild(taskTitle);
   taskInfo.appendChild(taskNote);
@@ -101,12 +103,12 @@ function renderUncompletedTasks(task, index, list){
 
   const taskDeleteBtn = document.createElement('button');
   taskDeleteBtn.textContent = 'x';
-  taskDeleteBtn.classList.add(`task-delete-btn-${list.title}`);
+  taskDeleteBtn.classList.add(`task-delete-btn-${list._title}`);
   taskDeleteBtn.setAttribute('id', `unchecked-${index}`);
 
   const taskEditBtn = document.createElement('button');
   taskEditBtn.textContent = 'E';
-  taskEditBtn.classList.add(`task-edit-btn-${list.title}`);
+  taskEditBtn.classList.add(`task-edit-btn-${list._title}`);
   taskEditBtn.setAttribute('id', `unchecked-${index}`);
 
   btnContainer.appendChild(taskEditBtn);
@@ -119,7 +121,7 @@ function renderUncompletedTasks(task, index, list){
   taskContent.appendChild(taskInfo);
   taskContent.appendChild(btnContainer);
 
-  document.getElementById(`uncompleted-task-container-${list.title}`).appendChild(taskContent);
+  document.getElementById(`uncompleted-task-container-${list._title}`).appendChild(taskContent);
 }
 
 function renderCompletedTasks(completeTask, index, list){
@@ -127,7 +129,7 @@ function renderCompletedTasks(completeTask, index, list){
   taskContent.classList.add('task-content');
 
   const checkbox = document.createElement('div');
-  checkbox.classList.add( `checkbox-checked-${list.title}`);
+  checkbox.classList.add( `checkbox-checked-${list._title}`);
   checkbox.classList.add( `checkbox-checked`);
   checkbox.setAttribute('id', index);
 
@@ -140,10 +142,10 @@ function renderCompletedTasks(completeTask, index, list){
 
   const taskTitle = document.createElement('h4');
   
-  taskTitle.textContent = completeTask.title;
+  taskTitle.textContent = completeTask._title;
 
   const taskNote = document.createElement('h5');
-  taskNote.textContent = completeTask.note;
+  taskNote.textContent = completeTask._note;
 
   taskInfo.appendChild(taskTitle);
   taskInfo.appendChild(taskNote);
@@ -154,12 +156,12 @@ function renderCompletedTasks(completeTask, index, list){
 
   const taskDeleteBtn = document.createElement('button');
   taskDeleteBtn.textContent = 'x';
-  taskDeleteBtn.classList.add(`task-delete-btn-${list.title}`);
+  taskDeleteBtn.classList.add(`task-delete-btn-${list._title}`);
   taskDeleteBtn.setAttribute('id', `checked-${index}`);
 
   const taskEditBtn = document.createElement('button');
   taskEditBtn.textContent = 'E';
-  taskEditBtn.classList.add(`task-edit-btn-${list.title}`);
+  taskEditBtn.classList.add(`task-edit-btn-${list._title}`);
   taskEditBtn.setAttribute('id', `checked-${index}`);
 
   btnContainer.appendChild(taskEditBtn);
@@ -169,22 +171,22 @@ function renderCompletedTasks(completeTask, index, list){
   taskContent.appendChild(taskInfo);
   taskContent.appendChild(btnContainer);
 
-  document.getElementById(`completed-task-container-${list.title}`).appendChild(taskContent);
+  document.getElementById(`completed-task-container-${list._title}`).appendChild(taskContent);
 }
 
 
 export function renderTasks (list) {
-  const tasks = list.tasks;
-  const completedTasks = list.completedTasks;
+  const tasks = list._tasks;
+  const completedTasks = list._completedTasks;
 
-  document.getElementById(`uncompleted-task-container-${list.title}`).innerHTML = '';
+  document.getElementById(`uncompleted-task-container-${list._title}`).innerHTML = '';
   tasks.forEach((task, index) =>{
 
     renderUncompletedTasks(task, index, list);
     
   });
 
-  document.getElementById(`completed-task-container-${list.title}`).innerHTML = '';
+  document.getElementById(`completed-task-container-${list._title}`).innerHTML = '';
   completedTasks.forEach((completeTask, index) => {
     renderCompletedTasks(completeTask, index, list);
     
@@ -196,43 +198,45 @@ export function renderTasks (list) {
 }
 
 function addTaskListeners(list){
-  document.querySelectorAll(`.checkbox-unchecked-${list.title}`).forEach((uncheckedCheckbox) => {
+  document.querySelectorAll(`.checkbox-unchecked-${list._title}`).forEach((uncheckedCheckbox) => {
     uncheckedCheckbox.addEventListener('click', () => {
-      updateTaskLists(uncheckedCheckbox.getAttribute('id'), list.tasks, list.completedTasks);
+      updateTaskLists(uncheckedCheckbox.getAttribute('id'), list._tasks, list._completedTasks);
       renderTasks(list);
-      
+      localStorage.setItem('lists', JSON.stringify(lists));
       
     });
   });
 
-  document.querySelectorAll(`.checkbox-checked-${list.title}`).forEach((checkedCheckbox) => {
+  document.querySelectorAll(`.checkbox-checked-${list._title}`).forEach((checkedCheckbox) => {
     checkedCheckbox.addEventListener('click', () => {
 
-      updateTaskLists( checkedCheckbox.getAttribute('id'), list.completedTasks, list.tasks);
+      updateTaskLists( checkedCheckbox.getAttribute('id'), list._completedTasks, list._tasks);
       renderTasks(list);
+      localStorage.setItem('lists', JSON.stringify(lists));
     });
   });
 
-  document.querySelectorAll(`.task-delete-btn-${list.title}`).forEach((btn) =>{
+  document.querySelectorAll(`.task-delete-btn-${list._title}`).forEach((btn) =>{
     btn.addEventListener('click', () => {
       const btnId = btn.getAttribute('id');
       const btnInfo = btnId.split('-');
 
       if(btnInfo[0] === 'unchecked'){
-        list.tasks.splice(btnInfo[1],1);
+        list._tasks.splice(btnInfo[1],1);
       }
       else{
-        list.completedTasks.splice(btnInfo[1],1);
+        list._completedTasks.splice(btnInfo[1],1);
       }
       renderTasks(list);
+      localStorage.setItem('lists', JSON.stringify(lists));
     });
   });
 
 
-  document.querySelectorAll(`.task-edit-btn-${list.title}`).forEach((btn) =>{
+  document.querySelectorAll(`.task-edit-btn-${list._title}`).forEach((btn) =>{
     btn.addEventListener('click', () => {
       const btnInfo = btn.getAttribute('id').split('-');
-      const taskList = btnInfo[0] === 'unchecked' ? list.tasks : list.completedTasks;
+      const taskList = btnInfo[0] === 'unchecked' ? list._tasks : list._completedTasks;
       const taskIndex = btnInfo[1];
 
       openOverlay();
@@ -339,7 +343,7 @@ function addTaskFormListeners(list, taskInfo){
     else{
       if(action === 'add'){
       
-        list.tasks.push(new Task(taskTitle, taskNote));
+        list._tasks.push(new Task(taskTitle, taskNote));
         renderTasks(list);
         resetTaskForm();
         closeOverlay();
@@ -353,6 +357,8 @@ function addTaskFormListeners(list, taskInfo){
         resetTaskForm();
         closeOverlay();
       }
+
+      localStorage.setItem('lists', JSON.stringify(lists));
     }
 
     
