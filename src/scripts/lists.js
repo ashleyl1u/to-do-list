@@ -94,6 +94,12 @@ function removeList(index) {
   lists.splice(index,1);
   renderLists();
   localStorage.setItem('lists', JSON.stringify(lists));
+
+  document.getElementById('content').innerHTML='';
+  lists.forEach((list) => {
+    renderContent(list);
+    renderTasks(list);
+  });
 }
 
 
@@ -144,12 +150,27 @@ function addNewListListeners() {
 
   document.getElementById('new-list-form').addEventListener('submit', (e) => {
     e.preventDefault();
+    
     const listName = document.getElementById('list-name-input').value;
+    let errorFlag = false;
+
+    lists.forEach((list) => {
+      
+      if(list._title === listName){
+        document.getElementById('list-name-error-msg').textContent = '*List Already Exists';
+        errorFlag = true;
+       
+      }
+    });
     
     if(listName === ''){
       document.getElementById('list-name-error-msg').textContent = '*Required';
+      errorFlag = true;
     }
-    else{
+
+
+    if(errorFlag === false){
+
       resetForm();
       closeOverlay();
       addList(listName);
@@ -165,9 +186,12 @@ function addNewListListeners() {
 
 
 function addList (listName){
-  lists.push(new List(listName));
+  const newList = new List(listName)
+  lists.push(newList);
   localStorage.setItem('lists', JSON.stringify(lists));
-  
+  document.getElementById('content').innerHTML='';
+  renderContent(newList);
+  renderTasks(newList);
 }
 
 function resetForm(){
