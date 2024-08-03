@@ -2,11 +2,13 @@
 import '../styles/tasks.css';
 import { openOverlay, closeOverlay} from './overlay';
 import { lists } from './lists';
+import {format} from 'date-fns';
 
 export class Task{
-  constructor(title, note = ''){
+  constructor(title, note = '', dueDate = ''){
     this.title = title;
     this.note = note;
+    this.dueDate = dueDate; 
   }
 
   set title(title){
@@ -23,6 +25,14 @@ export class Task{
 
   get note(){
     return this._note;
+  }
+
+  get dueDate() {
+    return this._dueDate;
+  }
+
+  set dueDate (dueDate) {
+    this._dueDate = dueDate;
   }
 
 }
@@ -76,6 +86,12 @@ function addContentListeners(list){
  
 }
 
+function formatDate (dueDate){
+  const dateInfo = dueDate.split('-');
+  const date = new Date(dateInfo[0], dateInfo[1], dateInfo[2]);
+  return (format(date,'MMM d, yyyy'));
+}
+
 function renderUncompletedTasks(task, index, list){
   const taskContent = document.createElement('div');
   taskContent.classList.add('task-content');
@@ -94,8 +110,12 @@ function renderUncompletedTasks(task, index, list){
   const taskNote = document.createElement('h5');
   taskNote.textContent = task._note;
 
+  const taskDueDate = document.createElement('h5');
+  taskDueDate.textContent = formatDate(task._dueDate);
+
   taskInfo.appendChild(taskTitle);
   taskInfo.appendChild(taskNote);
+  taskInfo.appendChild(taskDueDate);
 
 
   const btnContainer = document.createElement('div');
@@ -147,8 +167,12 @@ function renderCompletedTasks(completeTask, index, list){
   const taskNote = document.createElement('h5');
   taskNote.textContent = completeTask._note;
 
+  const taskDueDate = document.createElement('h5');
+  taskDueDate.textContent = formatDate(completeTask._dueDate);
+
   taskInfo.appendChild(taskTitle);
   taskInfo.appendChild(taskNote);
+  taskInfo.appendChild(taskDueDate);
 
 
   const btnContainer = document.createElement('div');
@@ -250,8 +274,9 @@ function addTaskListeners(list){
 }
 
 function fillInUpdateTaskForm (taskInfo){
-  document.getElementById('task-title-input').value = taskInfo.title;
-  document.getElementById('task-note-input').value = taskInfo.note;
+  document.getElementById('task-title-input').value = taskInfo._title;
+  document.getElementById('task-note-input').value = taskInfo._note;
+  document.getElementById('task-date-input').value = taskInfo._dueDate;
 }
 
 
@@ -278,6 +303,11 @@ function renderTaskForm(list, type, taskInfo){
   const taskNoteInput = document.createElement('input');
   taskNoteInput.placeholder = 'Note';
   taskNoteInput.setAttribute('id', 'task-note-input');
+
+  const taskDateInput = document.createElement('input');
+  taskDateInput.setAttribute('type', 'date');
+  taskDateInput.setAttribute('id', 'task-date-input');
+  
 
   const btnContainer = document.createElement('div');
   
@@ -313,8 +343,9 @@ function renderTaskForm(list, type, taskInfo){
   btnContainer.appendChild(updateBtn);
 
   newTaskForm.appendChild(taskTitleInput);
-  newTaskForm.appendChild(taskNoteInput);
   newTaskForm.appendChild(errorMsg);
+  newTaskForm.appendChild(taskNoteInput);
+  newTaskForm.appendChild(taskDateInput);
   newTaskForm.appendChild(btnContainer);
 
 
@@ -336,6 +367,7 @@ function addTaskFormListeners(list, taskInfo){
 
     const taskTitle = document.getElementById('task-title-input').value;
     const taskNote = document.getElementById('task-note-input').value;
+    const taskDueDate = document.getElementById('task-date-input').value;
 
     if(taskTitle === ''){
       document.getElementById('task-title-error-msg').textContent = '*Required';
@@ -343,7 +375,7 @@ function addTaskFormListeners(list, taskInfo){
     else{
       if(action === 'add'){
       
-        list._tasks.push(new Task(taskTitle, taskNote));
+        list._tasks.push(new Task(taskTitle, taskNote, taskDueDate));
         renderTasks(list);
         resetTaskForm();
         closeOverlay();
@@ -351,8 +383,9 @@ function addTaskFormListeners(list, taskInfo){
       }
 
       if (action === 'update'){
-        taskInfo.title = taskTitle;
-        taskInfo.note = taskNote;
+        taskInfo._title = taskTitle;
+        taskInfo._note = taskNote;
+        taskInfo._dueDate = taskDueDate;
         renderTasks(list);
         resetTaskForm();
         closeOverlay();
@@ -360,10 +393,6 @@ function addTaskFormListeners(list, taskInfo){
 
       localStorage.setItem('lists', JSON.stringify(lists));
     }
-
-    
-
-    
     
   });
 
