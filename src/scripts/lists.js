@@ -1,5 +1,6 @@
 import { closeOverlay } from "./overlay";
 import { renderContent , renderTasks} from "./tasks";
+import deleteIcon from '../icons/delete.svg';
 
 
 export class List {
@@ -59,13 +60,23 @@ export function renderLists() {
     listBtn.textContent = list._title;
 
     const listDeleteBtn = document.createElement('button');
-    listDeleteBtn.textContent = 'x';
+    const deleteImg = new Image();
+    deleteImg.src = deleteIcon;
+    listDeleteBtn.appendChild(deleteImg);
     listDeleteBtn.classList.add('delete-list-btn');
-    listDeleteBtn.setAttribute('id', index);
+    listDeleteBtn.setAttribute('id', `delete-list-btn-${index}`);
+
+    const listTaskCount = document.createElement('h6');
+    listTaskCount.textContent = list._tasks.length;
+    listTaskCount.classList.add('list-task-count');
+    listTaskCount.setAttribute('id', `list-task-count-${index}`);
+  
+
 
 
     listContent.appendChild(listBtn);
     listContent.appendChild(listDeleteBtn);
+    listContent.appendChild(listTaskCount);
 
     listContainer.appendChild(listContent);
   });
@@ -77,7 +88,8 @@ function addListListeners(){
   document.querySelectorAll('.delete-list-btn').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation(); 
-      removeList(btn.getAttribute('id'));
+      const listIndex = btn.getAttribute('id').split('-')[3];
+      removeList(listIndex);
     });
   });
 
@@ -87,7 +99,24 @@ function addListListeners(){
       renderContent(lists[list.getAttribute('id')]);
       renderTasks(lists[list.getAttribute('id')]);
     });
+
+    list.addEventListener('mouseover', () =>  {
+      const deletebtn = document.getElementById(`delete-list-btn-${list.getAttribute('id')}`);
+      deletebtn.style.display = 'block';
+
+      const taskCount = document.getElementById(`list-task-count-${list.getAttribute('id')}`);
+      taskCount.style.display = 'none';
+    });
+    list.addEventListener('mouseout', () =>  {
+      const deletebtn = document.getElementById(`delete-list-btn-${list.getAttribute('id')}`);
+      deletebtn.style.display = 'none';
+
+      const taskCount = document.getElementById(`list-task-count-${list.getAttribute('id')}`);
+      taskCount.style.display = 'block';
+    });
   });
+
+
 }
 
 function removeList(index) {

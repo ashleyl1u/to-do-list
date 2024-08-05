@@ -1,16 +1,42 @@
+#content{
+  background-color: white;
+  grid-column: 2/5;
+  grid-row: 1/3;
+  height: 100vh;
+  padding: 0px 20px;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
 .tasks-header{
   display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
 }
 
-
-.task-content{
+#content .list-info-container{
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--grey-4);
+  font-size: 12px;
+  font-weight: 500;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
+
+#content .show-hide-btn{
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  
+}
+
 
 .checkbox-unchecked{
   position: relative;
-  height: 18px;
-  width: 18px;
+  height: 16px;
+  width: 16px;
   border: 2px solid grey;
   border-radius: 50%;
   cursor: pointer;
@@ -18,8 +44,8 @@
 
 .checkbox-checked{
   position: relative;
-  height: 18px;
-  width: 18px;
+  height: 16px;
+  width: 16px;
   border: 2px solid black;
   border-radius: 50%;
   cursor: pointer;
@@ -31,10 +57,97 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  height: 16px;
-  width: 16px;
+  height: 14px;
+  width: 14px;
   border: 1px solid white;
   border-radius: 50%;
   cursor: pointer;
   background-color: black;
+}
+
+
+#content h1{
+  font-size: 30px;
+  font-weight: 700;
+}
+
+#content .task-info{
+  margin-left: 30px;
+  display: flex;
+  flex-direction: column;
+  
+  
+}
+
+#content .task-content{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0px;
+  border-bottom: 1px solid var(--grey-4);
+  position: relative;
+}
+
+#content .task-content-left{
+  display: flex;
+  flex-direction: column;
+}
+
+#content .task-main-content{
+  display: flex;
+  align-items: center;
+  
+}
+
+#content h4{
+  font-size: 14px;
+  font-weight: 400;
+  margin-left: 10px;
+}
+
+#content h5{
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--grey-1);
+}
+
+#content h6{
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 1px;
+  margin-bottom: 4px;
+  color: var(--grey-1);
+}
+
+#content .complete{
+  opacity: 0.5;
+
+}
+
+#content .task-content button {
+  width: 20px;
+  height: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+#content .task-btn-container{
+  display: none;
+  justify-content: center;
+  gap: 5px;
+}
+
+#content .new-task-btn{
+  border: none;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  cursor: pointer;
+  
+}
+
+#content .add-icon{
+  width: 20px;
+  height: 20px;
 }

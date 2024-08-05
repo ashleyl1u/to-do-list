@@ -1,8 +1,11 @@
 
 import '../styles/tasks.css';
 import { openOverlay, closeOverlay} from './overlay';
-import { lists } from './lists';
+import { lists, renderLists } from './lists';
 import {format} from 'date-fns';
+import editIcon from '../icons/edit.svg';
+import deleteIcon from '../icons/delete.svg';
+import addIcon from '../icons/add.svg';
 
 export class Task{
   constructor(title, note = '', dueDate = ''){
@@ -49,9 +52,12 @@ export function renderContent(list) {
 
 
   const newTaskBtn = document.createElement('button');
+  const addImg = new Image();
+  addImg.src = addIcon;
+  addImg.classList.add('add-icon');
   newTaskBtn.setAttribute('id',`new-task-btn-${list._title}`);
   newTaskBtn.classList.add('new-task-btn');
-  newTaskBtn.textContent = '+ new task';
+  newTaskBtn.textContent += '+';
 
   tasksHeader.appendChild(listName);
   tasksHeader.appendChild(newTaskBtn);
@@ -63,16 +69,40 @@ export function renderContent(list) {
 
   const completedTaskContainer = document.createElement('div');
   completedTaskContainer.setAttribute('id', `completed-task-container-${list._title}`);
+  completedTaskContainer.style.display = 'none';
 
   
+  const listInfoContainer = document.createElement('div');
+  listInfoContainer.classList.add('list-info-container');
+  
+  const listInfo = document.createElement('div');
+  listInfo.setAttribute('id', `list-info-${list._title}`);
+  listInfo.textContent = `${list._tasks.length} Tasks Remaining · ${list._completedTasks.length} Completed`;
+
+
+  const showHideBtn = document.createElement('button');
+  showHideBtn.textContent = 'show';
+  showHideBtn.setAttribute('id',`show-hide-btn-${list._title}`);
+  showHideBtn.classList.add('show-hide-btn');
+
+  listInfoContainer.appendChild(listInfo);
+  listInfoContainer.appendChild(showHideBtn);
+  listContentContainer.appendChild(listInfoContainer);
+
   listContentContainer.appendChild(taskContainer);
   listContentContainer.appendChild(completedTaskContainer);
 
   document.getElementById('content').appendChild(listContentContainer);
 
+
+
   addContentListeners(list);
 
 
+}
+
+function updateListInfo(list){
+  document.getElementById(`list-info-${list._title}`).textContent = `${list._tasks.length} Tasks Remaining · ${list._completedTasks.length} Completed`;
 }
 
 function addContentListeners(list){
@@ -82,11 +112,23 @@ function addContentListeners(list){
     renderTaskForm(list, 'add', 'n/a');
   });
 
+  document.getElementById(`show-hide-btn-${list._title}`).addEventListener('click', () => {
+    const completedTaskContainer = document.getElementById(`completed-task-container-${list._title}`);
+
+    const showHideBtn = document.getElementById(`show-hide-btn-${list._title}`);
+    const listStatus = showHideBtn.textContent;
+     listStatus === 'show' ? completedTaskContainer.style.display = 'block' : completedTaskContainer.style.display = 'none';
+     listStatus === 'show' ? showHideBtn.textContent = 'hide': showHideBtn.textContent = 'show';
+  });
+
 
  
 }
 
 function formatDate (dueDate){
+  if(dueDate === ''){
+    return '';
+  }
   const dateInfo = dueDate.split('-');
   const date = new Date(dateInfo[0], dateInfo[1], dateInfo[2]);
   return (format(date,'MMM d, yyyy'));
@@ -95,11 +137,25 @@ function formatDate (dueDate){
 function renderUncompletedTasks(task, index, list){
   const taskContent = document.createElement('div');
   taskContent.classList.add('task-content');
+  taskContent.classList.add(`task-content-${list._title}`);
+  taskContent.setAttribute('id', `task-content-uncomplete-${index}`);
+  
+
+  const taskContentLeft = document.createElement('div');
+  taskContentLeft.classList.add('task-content-left');
+  
+  const taskContentRight = document.createElement('div');
+  taskContentRight.classList.add('task-content-right');
+
+  const taskContentMain = document.createElement('div');
+  taskContentMain.classList.add('task-main-content');
 
   const checkbox = document.createElement('div');
   checkbox.classList.add( `checkbox-unchecked-${list._title}`);
   checkbox.classList.add( `checkbox-unchecked`);
   checkbox.setAttribute('id', index);
+
+  taskContentMain.appendChild(checkbox);
 
   const taskInfo = document.createElement('div');
   taskInfo.classList.add('task-info');
@@ -107,27 +163,34 @@ function renderUncompletedTasks(task, index, list){
   const taskTitle = document.createElement('h4');
   taskTitle.textContent = task._title;
 
-  const taskNote = document.createElement('h5');
+  const taskNote = document.createElement('h6');
   taskNote.textContent = task._note;
 
   const taskDueDate = document.createElement('h5');
   taskDueDate.textContent = formatDate(task._dueDate);
 
-  taskInfo.appendChild(taskTitle);
+  taskContentMain.appendChild(taskTitle);
   taskInfo.appendChild(taskNote);
   taskInfo.appendChild(taskDueDate);
 
+  taskContentLeft.appendChild(taskContentMain);
+  taskContentLeft.appendChild(taskInfo);
 
   const btnContainer = document.createElement('div');
   btnContainer.classList.add('task-btn-container');
+  btnContainer.setAttribute('id', `btn-container-${list._title}-uncomplete-${index}`);
 
   const taskDeleteBtn = document.createElement('button');
-  taskDeleteBtn.textContent = 'x';
+  const deleteImg = new Image();
+  deleteImg.src = deleteIcon;
+  taskDeleteBtn.appendChild(deleteImg);
   taskDeleteBtn.classList.add(`task-delete-btn-${list._title}`);
   taskDeleteBtn.setAttribute('id', `unchecked-${index}`);
 
   const taskEditBtn = document.createElement('button');
-  taskEditBtn.textContent = 'E';
+  const editImg = new Image ();
+  editImg.src = editIcon;
+  taskEditBtn.appendChild(editImg);
   taskEditBtn.classList.add(`task-edit-btn-${list._title}`);
   taskEditBtn.setAttribute('id', `unchecked-${index}`);
 
@@ -135,11 +198,10 @@ function renderUncompletedTasks(task, index, list){
   btnContainer.appendChild(taskDeleteBtn);
   
 
+  taskContentRight.appendChild(btnContainer);
 
-
-  taskContent.appendChild(checkbox);
-  taskContent.appendChild(taskInfo);
-  taskContent.appendChild(btnContainer);
+  taskContent.appendChild(taskContentLeft);
+  taskContent.appendChild(taskContentRight);
 
   document.getElementById(`uncompleted-task-container-${list._title}`).appendChild(taskContent);
 }
@@ -147,11 +209,25 @@ function renderUncompletedTasks(task, index, list){
 function renderCompletedTasks(completeTask, index, list){
   const taskContent = document.createElement('div');
   taskContent.classList.add('task-content');
+  taskContent.classList.add(`task-content-${list._title}`);
+  taskContent.classList.add('complete');
+  taskContent.setAttribute('id', `task-content-complete-${index}`);
+
+  const taskContentLeft = document.createElement('div');
+  taskContentLeft.classList.add('task-content-left');
+  
+  const taskContentRight = document.createElement('div');
+  taskContentRight.classList.add('task-content-right');
+
+  const taskContentMain = document.createElement('div');
+  taskContentMain.classList.add('task-main-content');
 
   const checkbox = document.createElement('div');
   checkbox.classList.add( `checkbox-checked-${list._title}`);
   checkbox.classList.add( `checkbox-checked`);
   checkbox.setAttribute('id', index);
+
+  taskContentMain.appendChild(checkbox);
 
   const checkboxStatus = document.createElement('div');
   checkbox.appendChild(checkboxStatus);
@@ -164,36 +240,44 @@ function renderCompletedTasks(completeTask, index, list){
   
   taskTitle.textContent = completeTask._title;
 
-  const taskNote = document.createElement('h5');
+  const taskNote = document.createElement('h6');
   taskNote.textContent = completeTask._note;
 
   const taskDueDate = document.createElement('h5');
   taskDueDate.textContent = formatDate(completeTask._dueDate);
 
-  taskInfo.appendChild(taskTitle);
+  taskContentMain.appendChild(taskTitle);
   taskInfo.appendChild(taskNote);
   taskInfo.appendChild(taskDueDate);
 
+  taskContentLeft.appendChild(taskContentMain);
+  taskContentLeft.appendChild(taskInfo);
 
   const btnContainer = document.createElement('div');
   btnContainer.classList.add('task-btn-container');
+  btnContainer.setAttribute('id', `btn-container-${list._title}-complete-${index}`);
 
   const taskDeleteBtn = document.createElement('button');
-  taskDeleteBtn.textContent = 'x';
+  const deleteImg = new Image();
+  deleteImg.src = deleteIcon;
+  taskDeleteBtn.appendChild(deleteImg);
   taskDeleteBtn.classList.add(`task-delete-btn-${list._title}`);
   taskDeleteBtn.setAttribute('id', `checked-${index}`);
 
   const taskEditBtn = document.createElement('button');
-  taskEditBtn.textContent = 'E';
+  const editImg = new Image ();
+  editImg.src = editIcon;
+  taskEditBtn.appendChild(editImg);
   taskEditBtn.classList.add(`task-edit-btn-${list._title}`);
   taskEditBtn.setAttribute('id', `checked-${index}`);
 
   btnContainer.appendChild(taskEditBtn);
   btnContainer.appendChild(taskDeleteBtn);
 
-  taskContent.appendChild(checkbox);
-  taskContent.appendChild(taskInfo);
-  taskContent.appendChild(btnContainer);
+  taskContentRight.appendChild(btnContainer);
+
+  taskContent.appendChild(taskContentLeft);
+  taskContent.appendChild(taskContentRight);
 
   document.getElementById(`completed-task-container-${list._title}`).appendChild(taskContent);
 }
@@ -218,7 +302,7 @@ export function renderTasks (list) {
 
   
   addTaskListeners(list);
-  //addCompleteTaskListeners(list.tasks);
+  
 }
 
 function addTaskListeners(list){
@@ -227,7 +311,8 @@ function addTaskListeners(list){
       updateTaskLists(uncheckedCheckbox.getAttribute('id'), list._tasks, list._completedTasks);
       renderTasks(list);
       localStorage.setItem('lists', JSON.stringify(lists));
-      
+      renderLists();
+      updateListInfo(list);
     });
   });
 
@@ -237,6 +322,8 @@ function addTaskListeners(list){
       updateTaskLists( checkedCheckbox.getAttribute('id'), list._completedTasks, list._tasks);
       renderTasks(list);
       localStorage.setItem('lists', JSON.stringify(lists));
+      renderLists();
+      updateListInfo(list);
     });
   });
 
@@ -253,6 +340,8 @@ function addTaskListeners(list){
       }
       renderTasks(list);
       localStorage.setItem('lists', JSON.stringify(lists));
+      renderLists();
+      updateListInfo(list);
     });
   });
 
@@ -269,6 +358,31 @@ function addTaskListeners(list){
     })
   })
 
+  document.querySelectorAll(`.task-content-${list._title}`).forEach((task) =>{
+    task.addEventListener('mouseover', () => {
+      const taskInfo = task.getAttribute('id').split('-');
+      const taskType = taskInfo[2];
+      const taskIndex = taskInfo[3];
+
+      const btnContainer = document.getElementById(`btn-container-${list._title}-${taskType}-${taskIndex}`);
+      btnContainer.style.display = 'flex';
+
+
+    })
+  })
+
+  document.querySelectorAll(`.task-content-${list._title}`).forEach((task) =>{
+    task.addEventListener('mouseout', () => {
+      const taskInfo = task.getAttribute('id').split('-');
+      const taskType = taskInfo[2];
+      const taskIndex = taskInfo[3];
+
+      const btnContainer = document.getElementById(`btn-container-${list._title}-${taskType}-${taskIndex}`);
+      btnContainer.style.display = 'none';
+
+
+    })
+  })
   
   
 }
@@ -379,7 +493,8 @@ function addTaskFormListeners(list, taskInfo){
         renderTasks(list);
         resetTaskForm();
         closeOverlay();
-      
+        renderLists();
+        updateListInfo(list);
       }
 
       if (action === 'update'){
@@ -389,6 +504,7 @@ function addTaskFormListeners(list, taskInfo){
         renderTasks(list);
         resetTaskForm();
         closeOverlay();
+        renderLists();
       }
 
       localStorage.setItem('lists', JSON.stringify(lists));
