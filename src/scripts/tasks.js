@@ -6,6 +6,7 @@ import {format} from 'date-fns';
 import editIcon from '../icons/edit.svg';
 import deleteIcon from '../icons/delete.svg';
 import addIcon from '../icons/add.svg';
+import {showOnlyTodayTasks} from './side-bar';
 
 export class Task{
   constructor(title, note = '', dueDate = ''){
@@ -43,6 +44,10 @@ export class Task{
 
 export function renderContent(list) {
   const listContentContainer = document.createElement('div');
+
+  const mainListTitle = document.createElement('div');
+  mainListTitle.setAttribute('id', 'main-list-header-container');
+  listContentContainer.appendChild(mainListTitle);
   
   const tasksHeader = document.createElement('div');
   tasksHeader.classList.add('tasks-header');
@@ -101,8 +106,37 @@ export function renderContent(list) {
 
 }
 
-function updateListInfo(list){
-  document.getElementById(`list-info-${list._title}`).textContent = `${list._tasks.length} Tasks Remaining · ${list._completedTasks.length} Completed`;
+export function updateListInfo(list){
+  let taskRemaining = list._tasks.length;
+  let taskCompleted = list._completedTasks.length;
+
+  const mainListTitle = document.getElementById('main-list-title');
+  if(mainListTitle !== null){
+    if(mainListTitle.textContent === 'TODAY'){
+      taskRemaining =0;
+      taskCompleted = 0;
+
+      const today = new Date();
+      const todaysDate = format(today, 'yyyy-MM-dd');
+      
+      list._tasks.forEach((task) => {
+        const taskDate = task._dueDate;
+        if (taskDate === todaysDate){
+          taskRemaining++;
+        }
+      })
+
+      list._completedTasks.forEach((task) => {
+        const taskDate = task._dueDate;
+        if (taskDate === todaysDate){
+          taskCompleted++;
+        }
+      })
+    }
+  }
+
+  document.getElementById(`list-info-${list._title}`).textContent = `${taskRemaining} Tasks Remaining · ${taskCompleted} Completed`;
+
 }
 
 function addContentListeners(list){
@@ -125,7 +159,7 @@ function addContentListeners(list){
  
 }
 
-function formatDate (dueDate){
+export function formatDate (dueDate){
   if(dueDate === ''){
     return '';
   }
@@ -138,7 +172,7 @@ function renderUncompletedTasks(task, index, list){
   const taskContent = document.createElement('div');
   taskContent.classList.add('task-content');
   taskContent.classList.add(`task-content-${list._title}`);
-  taskContent.setAttribute('id', `task-content-uncomplete-${index}`);
+  taskContent.setAttribute('id', `task-content-uncomplete-${index}-${list._title}`);
   
 
   const taskContentLeft = document.createElement('div');
@@ -211,7 +245,7 @@ function renderCompletedTasks(completeTask, index, list){
   taskContent.classList.add('task-content');
   taskContent.classList.add(`task-content-${list._title}`);
   taskContent.classList.add('complete');
-  taskContent.setAttribute('id', `task-content-complete-${index}`);
+  taskContent.setAttribute('id', `task-content-complete-${index}-${list._title}`);
 
   const taskContentLeft = document.createElement('div');
   taskContentLeft.classList.add('task-content-left');
@@ -495,6 +529,8 @@ function addTaskFormListeners(list, taskInfo){
         closeOverlay();
         renderLists();
         updateListInfo(list);
+
+
       }
 
       if (action === 'update'){
@@ -505,9 +541,22 @@ function addTaskFormListeners(list, taskInfo){
         resetTaskForm();
         closeOverlay();
         renderLists();
+        
       }
 
       localStorage.setItem('lists', JSON.stringify(lists));
+      
+      const mainListTitle = document.getElementById('main-list-title');
+      if(mainListTitle !== null){
+        if(mainListTitle.textContent === 'TODAY'){
+          showOnlyTodayTasks(list);
+        }
+      }
+
+      lists.forEach((list) => {
+        updateListInfo(list);
+      });
+      
     }
     
   });

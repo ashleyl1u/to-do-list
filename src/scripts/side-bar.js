@@ -1,9 +1,10 @@
 
 import { renderLists , renderNewListForm, lists } from "./lists";
 import {openOverlay} from './overlay';
-import { renderContent , renderTasks} from "./tasks";
+import { renderContent , renderTasks, updateListInfo} from "./tasks";
 import '../styles/side-bar.css';
 import addIcon from '../icons/add.svg';
+import {format} from 'date-fns';
 
 export function renderSideBar() {
   const sidebarTop = document.createElement('div');
@@ -22,6 +23,12 @@ export function renderSideBar() {
   all.textContent = 'All';
 
   mainContainer.appendChild(all);
+
+  const today = document.createElement('div');
+  today.setAttribute('id', 'today-btn');
+  today.textContent = 'Today';
+  mainContainer.appendChild(today);
+
   sidebarTop.appendChild(mainContainer);
 
   const listHeader = document.createElement('h2');
@@ -65,10 +72,69 @@ function addSidebarListeners(){
 
 
   document.getElementById('all-btn').addEventListener('click', () => {
-    document.getElementById('content').innerHTML='';
+    document.getElementById('content').innerHTML = '';
     lists.forEach((list) => {
       renderContent(list);
       renderTasks(list);
-    })
+    });
+    renderMainContent('ALL');
   });
+
+  document.getElementById('today-btn').addEventListener('click', () => {
+    document.getElementById('content').innerHTML = '';
+    
+    lists.forEach((list) => {
+      renderContent(list);
+      renderTasks(list);
+      
+      showOnlyTodayTasks(list);
+    });
+    renderMainContent('TODAY');
+
+    lists.forEach((list) => {
+      updateListInfo(list);
+    });
+    
+  });
+
+}
+
+
+export function showOnlyTodayTasks(list){
+  const today = new Date();
+  const todaysDate = format(today, 'yyyy-MM-dd');
+  
+  list._tasks.forEach((task, index) => {
+    const taskDate = task._dueDate;
+    if(taskDate === ''){
+      document.getElementById(`task-content-uncomplete-${index}-${list._title}`).style.display = 'none';
+    }
+    else if (taskDate !== todaysDate){
+      document.getElementById(`task-content-uncomplete-${index}-${list._title}`).style.display = 'none';
+    }
+    
+  })
+
+  list._completedTasks.forEach((task, index) => {
+    const taskDate = task._dueDate;
+    if(taskDate === ''){
+      document.getElementById(`task-content-complete-${index}-${list._title}`).style.display = 'none';
+    }
+    else if (taskDate !== todaysDate){
+      document.getElementById(`task-content-complete-${index}-${list._title}`).style.display = 'none';
+    }
+  })
+}
+
+
+export function renderMainContent(title){
+  
+  const mainTitle = document.createElement('h1');
+  mainTitle.textContent = title;
+  mainTitle.setAttribute('id', `main-list-title`);
+  mainTitle.classList.add('main-list-title');
+
+  document.getElementById('main-list-header-container').appendChild(mainTitle);
+
+
 }

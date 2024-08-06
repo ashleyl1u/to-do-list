@@ -31,6 +31,9 @@
 
 #side-bar #main-container{
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 #side-bar h2{
@@ -76,5 +79,9 @@
 }
 
 #side-bar #all-btn{
+  cursor: pointer;
+}
+
+#side-bar #today-btn{
   cursor: pointer;
 }
