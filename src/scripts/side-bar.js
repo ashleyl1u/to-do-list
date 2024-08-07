@@ -85,6 +85,11 @@ function addSidebarListeners(){
       renderTasks(list);
     });
     renderMainContent('ALL');
+    document.querySelectorAll('.list-title').forEach((header) =>{
+      console.log(header);
+      header.style.fontWeight = '500';
+    });
+
   });
 
   document.getElementById('today-btn').addEventListener('click', () => {
@@ -102,6 +107,10 @@ function addSidebarListeners(){
       updateListInfo(list);
     });
     
+    document.querySelectorAll('.list-title').forEach((header) =>{
+      console.log(header);
+      header.style.fontWeight = '500';
+    });
   });
 
 }
@@ -144,4 +153,17 @@ export function renderMainContent(title){
   document.getElementById('main-list-header-container').appendChild(mainTitle);
 
 
+}
+
+
+export function updateTaskCount(list){
+  let listIndex;
+  const listTitle = list._title;
+  
+  lists.forEach((l, index) =>{
+    if(l._title === listTitle){
+      listIndex = index;
+    }
+  })
+  document.getElementById(`list-task-count-${listIndex}`).textContent = list._tasks.length;
 }

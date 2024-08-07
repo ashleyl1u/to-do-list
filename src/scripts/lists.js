@@ -2,6 +2,7 @@ import { closeOverlay } from "./overlay";
 import { renderContent , renderTasks} from "./tasks";
 import { setClickedStyle } from "./side-bar";
 import deleteIcon from '../icons/delete.svg';
+import '../styles/list-form.css';
 
 
 export class List {
@@ -141,8 +142,12 @@ export function renderNewListForm(){
   const newListForm = document.createElement('form');
   newListForm.setAttribute('id','new-list-form');
 
+  const formTitle = document.createElement('h1');
+  formTitle.textContent = 'New List';
+  formTitle.setAttribute('id','new-list-form-title');
+
   const nameLabel = document.createElement('label');
-  nameLabel.textContent = 'List Name:';
+  nameLabel.textContent = 'Name';
 
   const nameInput = document.createElement('input');
   nameInput.setAttribute('id', 'list-name-input');
@@ -150,21 +155,38 @@ export function renderNewListForm(){
   const errorMsg = document.createElement('div');
   errorMsg.setAttribute('id', 'list-name-error-msg');
 
+  const inputContainer = document.createElement('div');
+  inputContainer.setAttribute('id', 'new-list-form-input-container');
+
+  inputContainer.appendChild(nameLabel);
+  inputContainer.appendChild(nameInput);
+  inputContainer.appendChild(errorMsg);
+
   const formBtn = document.createElement('button');
-  formBtn.textContent = 'Enter';
+  formBtn.textContent = 'Add';
   formBtn.setAttribute('id', 'list-submit-btn');
 
   const cancelBtn = document.createElement('button');
-  cancelBtn.textContent = 'cancel';
+  cancelBtn.textContent = 'Cancel';
   cancelBtn.setAttribute('id', 'list-cancel-btn');
   cancelBtn.setAttribute('type', 'reset');
 
+  const formTop = document.createElement('div');
+  formTop.setAttribute('id', 'new-list-form-top');
+
+  const formBottom = document.createElement('div');
+  formBottom.setAttribute('id', 'new-list-form-bottom');
+
   
-  newListForm.appendChild(nameLabel);
-  newListForm.appendChild(nameInput);
-  newListForm.appendChild(errorMsg);
-  newListForm.appendChild(formBtn);
-  newListForm.appendChild(cancelBtn);
+
+  formTop.appendChild(formTitle);
+  formTop.appendChild(inputContainer);
+  formBottom.appendChild(cancelBtn);
+  formBottom.appendChild(formBtn);
+  
+
+  newListForm.appendChild(formTop);
+  newListForm.appendChild(formBottom);
 
   document.getElementById('overlay').innerHTML ='';
   document.getElementById('overlay').appendChild(newListForm);
@@ -189,6 +211,7 @@ function addNewListListeners() {
       
       if(list._title === listName){
         document.getElementById('list-name-error-msg').textContent = '*List Already Exists';
+        document.getElementById('list-name-input').style.outlineColor = 'red';
         errorFlag = true;
        
       }
@@ -196,6 +219,7 @@ function addNewListListeners() {
     
     if(listName === ''){
       document.getElementById('list-name-error-msg').textContent = '*Required';
+      document.getElementById('list-name-input').style.outlineColor = 'red';
       errorFlag = true;
     }
 
@@ -212,6 +236,7 @@ function addNewListListeners() {
 
   document.getElementById('list-name-input').addEventListener('focus', () => {
     document.getElementById('list-name-error-msg').textContent = '';
+    document.getElementById('list-name-input').style.outlineColor = 'var(--grey-8)';
   });
 }
 

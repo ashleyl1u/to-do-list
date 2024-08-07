@@ -1,0 +1,58 @@
+#new-list-form{
+  background-color: white;
+  height: 200px;
+  width: 300px;
+  padding: 20px;
+  border-radius: 10px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#new-list-form h1{
+  font-size: 28px;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+
+#new-list-form label{
+  font-size: 14px;
+  margin-bottom: 3px;
+}
+
+#new-list-form #list-name-input{
+  padding: 5px;
+  font-size: 14px;
+  height: 15px;
+  border: none;
+  outline: var(--grey-8) solid 1px;
+  border-radius: 2px;
+}
+
+
+#new-list-form-input-container{
+  display: flex;
+  flex-direction: column;
+}
+
+
+#new-list-form #list-name-error-msg{
+  color: red;
+  font-size: 12px;
+  margin-top: 2px;
+
+}
+
+#new-list-form #new-list-form-bottom{
+  display: flex;
+  justify-content: end;
+  gap: 5px;
+}
+
+#new-list-form button{
+  cursor: pointer;
+  padding: 2px 5px;
+  font-size: 13px;
+  font-weight: 400;
+}

@@ -6,7 +6,7 @@ import {format} from 'date-fns';
 import editIcon from '../icons/edit.svg';
 import deleteIcon from '../icons/delete.svg';
 import addIcon from '../icons/add.svg';
-import {showOnlyTodayTasks} from './side-bar';
+import {setClickedStyle, showOnlyTodayTasks, updateTaskCount} from './side-bar';
 
 export class Task{
   constructor(title, note = '', dueDate = ''){
@@ -54,6 +54,7 @@ export function renderContent(list) {
 
   const listName = document.createElement('h1');
   listName.textContent = list._title;
+  listName.classList.add('list-title');
 
 
   const newTaskBtn = document.createElement('button');
@@ -83,6 +84,7 @@ export function renderContent(list) {
   const listInfo = document.createElement('div');
   listInfo.setAttribute('id', `list-info-${list._title}`);
   listInfo.textContent = `${list._tasks.length} Tasks Remaining · ${list._completedTasks.length} Completed`;
+  listInfo.classList.add('list-info');
 
 
   const showHideBtn = document.createElement('button');
@@ -136,6 +138,7 @@ export function updateListInfo(list){
   }
 
   document.getElementById(`list-info-${list._title}`).textContent = `${taskRemaining} Tasks Remaining · ${taskCompleted} Completed`;
+
 
 }
 
@@ -219,6 +222,7 @@ function renderUncompletedTasks(task, index, list){
   deleteImg.src = deleteIcon;
   taskDeleteBtn.appendChild(deleteImg);
   taskDeleteBtn.classList.add(`task-delete-btn-${list._title}`);
+  taskDeleteBtn.classList.add(`task-delete-btn`);
   taskDeleteBtn.setAttribute('id', `unchecked-${index}`);
 
   const taskEditBtn = document.createElement('button');
@@ -226,6 +230,7 @@ function renderUncompletedTasks(task, index, list){
   editImg.src = editIcon;
   taskEditBtn.appendChild(editImg);
   taskEditBtn.classList.add(`task-edit-btn-${list._title}`);
+  taskEditBtn.classList.add(`task-edit-btn`);
   taskEditBtn.setAttribute('id', `unchecked-${index}`);
 
   btnContainer.appendChild(taskEditBtn);
@@ -296,6 +301,7 @@ function renderCompletedTasks(completeTask, index, list){
   deleteImg.src = deleteIcon;
   taskDeleteBtn.appendChild(deleteImg);
   taskDeleteBtn.classList.add(`task-delete-btn-${list._title}`);
+  taskDeleteBtn.classList.add(`task-delete-btn`);
   taskDeleteBtn.setAttribute('id', `checked-${index}`);
 
   const taskEditBtn = document.createElement('button');
@@ -303,6 +309,7 @@ function renderCompletedTasks(completeTask, index, list){
   editImg.src = editIcon;
   taskEditBtn.appendChild(editImg);
   taskEditBtn.classList.add(`task-edit-btn-${list._title}`);
+  taskEditBtn.classList.add(`task-edit-btn`);
   taskEditBtn.setAttribute('id', `checked-${index}`);
 
   btnContainer.appendChild(taskEditBtn);
@@ -339,13 +346,16 @@ export function renderTasks (list) {
   
 }
 
+
+
 function addTaskListeners(list){
   document.querySelectorAll(`.checkbox-unchecked-${list._title}`).forEach((uncheckedCheckbox) => {
     uncheckedCheckbox.addEventListener('click', () => {
       updateTaskLists(uncheckedCheckbox.getAttribute('id'), list._tasks, list._completedTasks);
       renderTasks(list);
       localStorage.setItem('lists', JSON.stringify(lists));
-      renderLists();
+      
+      updateTaskCount(list);
       updateListInfo(list);
     });
   });
@@ -356,7 +366,7 @@ function addTaskListeners(list){
       updateTaskLists( checkedCheckbox.getAttribute('id'), list._completedTasks, list._tasks);
       renderTasks(list);
       localStorage.setItem('lists', JSON.stringify(lists));
-      renderLists();
+      updateTaskCount(list);
       updateListInfo(list);
     });
   });
@@ -374,7 +384,8 @@ function addTaskListeners(list){
       }
       renderTasks(list);
       localStorage.setItem('lists', JSON.stringify(lists));
-      renderLists();
+      updateTaskCount(list);
+      
       updateListInfo(list);
     });
   });
@@ -527,7 +538,7 @@ function addTaskFormListeners(list, taskInfo){
         renderTasks(list);
         resetTaskForm();
         closeOverlay();
-        renderLists();
+        updateTaskCount(list);
         updateListInfo(list);
 
 
@@ -540,7 +551,7 @@ function addTaskFormListeners(list, taskInfo){
         renderTasks(list);
         resetTaskForm();
         closeOverlay();
-        renderLists();
+        updateTaskCount(list);
         
       }
 
