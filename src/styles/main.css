@@ -1,12 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+
+
+
 :root {
-  --grey-1 : #9a9a9a ; 
-  --grey-2: #bbbbbb;
+  --grey-1 : #eeeeee ; 
+  --grey-2: #dddddd;
   --grey-3: #cccccc;
-  --grey-4: #dddddd;
-  --grey-5: #eeeeee;
+  --grey-4: #bbbbbb;
+  --grey-5: #9a9a9a;
+  --grey-6: #999999;
+  --grey-7: #777777;
+  --grey-8: #555555;
+  --grey-9: #333333;
+  --grey-10: #111111;
 }
 
 *{

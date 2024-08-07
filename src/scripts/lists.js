@@ -1,5 +1,6 @@
 import { closeOverlay } from "./overlay";
 import { renderContent , renderTasks} from "./tasks";
+import { setClickedStyle } from "./side-bar";
 import deleteIcon from '../icons/delete.svg';
 
 
@@ -93,8 +94,9 @@ function addListListeners(){
     });
   });
 
-  document.querySelectorAll('.list-content').forEach((list) => {
+  document.querySelectorAll('.list-content').forEach((list, index) => {
     list.addEventListener('click', () => {
+      setClickedStyle(index);
       document.getElementById('content').innerHTML='';
       renderContent(lists[list.getAttribute('id')]);
       renderTasks(lists[list.getAttribute('id')]);

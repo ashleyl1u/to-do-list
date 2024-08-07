@@ -10,10 +10,10 @@ export function renderSideBar() {
   const sidebarTop = document.createElement('div');
   const sidebarBottom = document.createElement('div');
 
-
-  const todoHeader = document.createElement('h1');
-  todoHeader.textContent = 'To-Do'; 
-  sidebarTop.appendChild(todoHeader);
+  const mainHeader = document.createElement('h2');
+  mainHeader.setAttribute('id', 'main-list-header');
+  mainHeader.textContent = 'Main Lists'
+  sidebarTop.appendChild(mainHeader);
 
   const mainContainer = document.createElement('div');
   mainContainer.setAttribute('id', 'main-container');
@@ -32,7 +32,7 @@ export function renderSideBar() {
   sidebarTop.appendChild(mainContainer);
 
   const listHeader = document.createElement('h2');
-  listHeader.setAttribute('id', 'list-header');
+  listHeader.setAttribute('id', 'my-list-header');
   listHeader.textContent = 'My Lists'
   sidebarTop.appendChild(listHeader);
 
@@ -63,6 +63,12 @@ export function renderSideBar() {
   
 }
 
+export function setClickedStyle(elementId){
+  document.getElementById('side-bar').innerHTML = '';
+  renderSideBar();
+  document.getElementById(elementId).style.backgroundColor = 'var(--grey-2)';
+}
+
 
 function addSidebarListeners(){
   document.getElementById('new-list-btn').addEventListener('click', () => {
@@ -72,6 +78,7 @@ function addSidebarListeners(){
 
 
   document.getElementById('all-btn').addEventListener('click', () => {
+    setClickedStyle('all-btn');
     document.getElementById('content').innerHTML = '';
     lists.forEach((list) => {
       renderContent(list);
@@ -82,7 +89,7 @@ function addSidebarListeners(){
 
   document.getElementById('today-btn').addEventListener('click', () => {
     document.getElementById('content').innerHTML = '';
-    
+    setClickedStyle('today-btn');
     lists.forEach((list) => {
       renderContent(list);
       renderTasks(list);

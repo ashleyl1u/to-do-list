@@ -1,12 +1,13 @@
 import './styles/main.css';
 import { renderContent, Task , renderTasks} from './scripts/tasks';
 import { lists} from './scripts/lists';
-import { renderSideBar, renderMainContent } from './scripts/side-bar';
+import { renderSideBar, renderMainContent, setClickedStyle } from './scripts/side-bar';
 
 
 
 
-renderSideBar();
+
+setClickedStyle('all-btn');
 document.getElementById('content').innerHTML = '';
 lists.forEach((list) => {
   renderContent(list);
