@@ -1,13 +1,15 @@
 
 import '../styles/tasks.css';
-import { openOverlay, closeOverlay} from './overlay';
+import { openOverlay, closeOverlay, renderTaskForm} from './forms';
 import { lists, renderLists } from './lists';
 import {format} from 'date-fns';
+
+import {setClickedStyle, updateTaskCount} from './side-bar';
+import { showOnlyTodayTasks, updateListInfo} from './content';
+import '../styles/task-form.css';
 import editIcon from '../icons/edit.svg';
 import deleteIcon from '../icons/delete.svg';
 import addIcon from '../icons/add.svg';
-import {setClickedStyle, showOnlyTodayTasks, updateTaskCount} from './side-bar';
-import '../styles/task-form.css';
 
 export class Task{
   constructor(title, note = '', dueDate = ''){
@@ -43,7 +45,7 @@ export class Task{
 }
 
 
-export function renderContent(list) {
+export function renderListHeader(list) {
   const listContentContainer = document.createElement('div');
 
   const mainListTitle = document.createElement('div');
@@ -109,44 +111,11 @@ export function renderContent(list) {
 
 }
 
-export function updateListInfo(list){
-  let taskRemaining = list._tasks.length;
-  let taskCompleted = list._completedTasks.length;
 
-  const mainListTitle = document.getElementById('main-list-title');
-  if(mainListTitle !== null){
-    if(mainListTitle.textContent === 'TODAY'){
-      taskRemaining =0;
-      taskCompleted = 0;
-
-      const today = new Date();
-      const todaysDate = format(today, 'yyyy-MM-dd');
-      
-      list._tasks.forEach((task) => {
-        const taskDate = task._dueDate;
-        if (taskDate === todaysDate){
-          taskRemaining++;
-        }
-      })
-
-      list._completedTasks.forEach((task) => {
-        const taskDate = task._dueDate;
-        if (taskDate === todaysDate){
-          taskCompleted++;
-        }
-      })
-    }
-  }
-
-  document.getElementById(`list-info-${list._title}`).textContent = `${taskRemaining} Tasks Remaining · ${taskCompleted} Completed`;
-
-
-}
 
 function addContentListeners(list){
 
   document.getElementById(`new-task-btn-${list._title}`).addEventListener('click', () => {
-    openOverlay();
     renderTaskForm(list, 'add', 'n/a');
   });
 
@@ -168,7 +137,8 @@ export function formatDate (dueDate){
     return '';
   }
   const dateInfo = dueDate.split('-');
-  const date = new Date(dateInfo[0], dateInfo[1], dateInfo[2]);
+  
+  const date = new Date(dateInfo[0], dateInfo[1]-1, dateInfo[2]);
   return (format(date,'MMM d, yyyy'));
 }
 
@@ -398,7 +368,7 @@ function addTaskListeners(list){
       const taskList = btnInfo[0] === 'unchecked' ? list._tasks : list._completedTasks;
       const taskIndex = btnInfo[1];
 
-      openOverlay();
+     
       renderTaskForm(list, 'update', taskList[taskIndex]);
       fillInUpdateTaskForm(taskList[taskIndex]);
     })
@@ -433,6 +403,22 @@ function addTaskListeners(list){
   
 }
 
+export function addNewTask(list, newTask){
+  list._tasks.push(newTask);
+  renderTasks(list);
+  updateTaskCount(list);
+  updateListInfo(list);
+}
+
+export function updateTask(task, newTaskTitle, newTaskNote, newTaskDueDate, list){
+  task._title = newTaskTitle;
+  task._note = newTaskNote;
+  task._dueDate = newTaskDueDate;
+  renderTasks(list);
+  updateTaskCount(list);
+
+}
+
 function fillInUpdateTaskForm (taskInfo){
   document.getElementById('task-title-input').value = taskInfo._title;
   document.getElementById('task-note-input').value = taskInfo._note;
@@ -445,172 +431,10 @@ function fillInUpdateTaskForm (taskInfo){
 function updateTaskLists(index, removeArr, addArr) {
   const removedTask = removeArr.splice(index, 1);
   addArr.push(removedTask[0]);
-
 }
 
 
-function renderTaskForm(list, type, taskInfo){
-  const newTaskForm = document.createElement('form');
-  newTaskForm.setAttribute('id', 'task-form');
 
-  const taskFormTop = document.createElement('div');
-  taskFormTop.setAttribute('id', 'task-form-top');
-
-  const taskFormBottom = document.createElement('div');
-  taskFormBottom.setAttribute('id', 'task-form-bottom');
-
-  const newTaskFormTitle = document.createElement('h1');
-  newTaskFormTitle.textContent = 'New Task';
-
-  const taskTitleLabel = document.createElement('label');
-  taskTitleLabel.textContent = 'Tasks';
-
-  const taskTitleInput = document.createElement('input');
-  taskTitleInput.placeholder = 'Enter Task';
-  taskTitleInput.setAttribute('id', 'task-title-input');
-
-  const errorMsg = document.createElement('div');
-  errorMsg.setAttribute('id', 'task-title-error-msg');
-
-  const taskNoteLabel = document.createElement('label');
-  taskNoteLabel.textContent = 'Note';
-
-  const taskNoteInput = document.createElement('input');
-  taskNoteInput.placeholder = 'Note';
-  taskNoteInput.setAttribute('id', 'task-note-input');
-
-  const taskDateLabel = document.createElement('label');
-  taskDateLabel.textContent = 'Due Date'
-
-  const taskDateInput = document.createElement('input');
-  taskDateInput.setAttribute('type', 'date');
-  taskDateInput.setAttribute('id', 'task-date-input');
-  
-
-  const btnContainer = document.createElement('div');
-  btnContainer.setAttribute('id', 'task-form-btn-container');
-  
-
-  const cancelBtn = document.createElement('button');
-  cancelBtn.textContent = 'Cancel';
-  cancelBtn.setAttribute('id', 'task-cancel-btn');
-  cancelBtn.setAttribute('type', 'reset');
-
-  const submitBtn = document.createElement('button');
-  submitBtn.textContent = 'Add';
-  submitBtn.setAttribute('id', 'task-submit-btn');
-  submitBtn.setAttribute('name', 'action');
-  submitBtn.setAttribute('value', 'add');
-
-  const updateBtn = document.createElement('button');
-  updateBtn.textContent = 'Update';
-  updateBtn.setAttribute('id', 'task-update-btn');
-  updateBtn.setAttribute('name', 'action');
-  updateBtn.setAttribute('value', 'update');
-
-  if(type === 'add'){
-    submitBtn.style.display = 'block';
-    updateBtn.style.display = 'none';
-  }
-  if (type === 'update'){
-    submitBtn.style.display = 'none';
-    updateBtn.style.display = 'block';
-  }
-
-  btnContainer.appendChild(cancelBtn);
-  btnContainer.appendChild(submitBtn);
-  btnContainer.appendChild(updateBtn);
-
-  taskFormTop.appendChild(newTaskFormTitle);
-  taskFormTop.appendChild(taskTitleLabel);
-  taskFormTop.appendChild(taskTitleInput);
-  taskFormTop.appendChild(errorMsg);
-  taskFormTop.appendChild(taskNoteLabel);
-  taskFormTop.appendChild(taskNoteInput);
-  taskFormTop.appendChild(taskDateLabel);
-  taskFormTop.appendChild(taskDateInput);
-  taskFormBottom.appendChild(btnContainer);
-
-  newTaskForm.appendChild(taskFormTop);
-  newTaskForm.appendChild(taskFormBottom);
-
-
-  document.getElementById('overlay').innerHTML ='';
-  document.getElementById('overlay').appendChild(newTaskForm);
-
-  addTaskFormListeners(list, taskInfo);
-}
-
-function addTaskFormListeners(list, taskInfo){
-  document.getElementById('task-cancel-btn').addEventListener('click',() => {
-    closeOverlay();
-  })
-
-  document.getElementById('task-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const action = e.submitter.value;
-
-    const taskTitle = document.getElementById('task-title-input').value;
-    const taskNote = document.getElementById('task-note-input').value;
-    const taskDueDate = document.getElementById('task-date-input').value;
-
-    if(taskTitle === ''){
-      document.getElementById('task-title-error-msg').textContent = '*Required';
-      document.getElementById('task-title-input').style.outlineColor = 'red';
-    }
-    else{
-      if(action === 'add'){
-      
-        list._tasks.push(new Task(taskTitle, taskNote, taskDueDate));
-        renderTasks(list);
-        resetTaskForm();
-        closeOverlay();
-        updateTaskCount(list);
-        updateListInfo(list);
-
-
-      }
-
-      if (action === 'update'){
-        taskInfo._title = taskTitle;
-        taskInfo._note = taskNote;
-        taskInfo._dueDate = taskDueDate;
-        renderTasks(list);
-        resetTaskForm();
-        closeOverlay();
-        updateTaskCount(list);
-        
-      }
-
-      localStorage.setItem('lists', JSON.stringify(lists));
-      
-      const mainListTitle = document.getElementById('main-list-title');
-      if(mainListTitle !== null){
-        if(mainListTitle.textContent === 'TODAY'){
-          showOnlyTodayTasks(list);
-        }
-      }
-
-      lists.forEach((list) => {
-        updateListInfo(list);
-      });
-      
-    }
-    
-  });
-
-
-  document.getElementById('task-title-input').addEventListener('focus', () => {
-    document.getElementById('task-title-error-msg').textContent = '';
-    document.getElementById('task-title-input').style.outlineColor = 'var(--grey-8)';
-  })
-
-}
-
-function resetTaskForm(){
-  document.getElementById('task-form').reset();
-}
 
 
 

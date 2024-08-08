@@ -1,7 +1,8 @@
 
-import { renderLists , renderNewListForm, lists } from "./lists";
-import {openOverlay} from './overlay';
-import { renderContent , renderTasks, updateListInfo} from "./tasks";
+import { renderLists , lists } from "./lists";
+import { renderNewListForm} from './forms';
+import { renderListHeader , renderTasks} from "./tasks";
+import { renderListContent, renderAllListContent, renderTodayListContent} from "./content";
 import '../styles/side-bar.css';
 import addIcon from '../icons/add.svg';
 import {format} from 'date-fns';
@@ -10,6 +11,7 @@ export function renderSideBar() {
   const sidebarTop = document.createElement('div');
   const sidebarBottom = document.createElement('div');
 
+  //main lists 
   const mainHeader = document.createElement('h2');
   mainHeader.setAttribute('id', 'main-list-header');
   mainHeader.textContent = 'Main Lists'
@@ -31,6 +33,7 @@ export function renderSideBar() {
 
   sidebarTop.appendChild(mainContainer);
 
+  //users lists
   const listHeader = document.createElement('h2');
   listHeader.setAttribute('id', 'my-list-header');
   listHeader.textContent = 'My Lists'
@@ -63,6 +66,24 @@ export function renderSideBar() {
   
 }
 
+
+function addSidebarListeners(){
+  document.getElementById('new-list-btn').addEventListener('click', () => {
+    renderNewListForm();
+  });
+
+
+  document.getElementById('all-btn').addEventListener('click', () => {
+    renderAllListContent();
+
+  });
+
+  document.getElementById('today-btn').addEventListener('click', () => {
+    renderTodayListContent();
+  });
+
+}
+
 export function setClickedStyle(elementId){
   document.getElementById('side-bar').innerHTML = '';
   renderSideBar();
@@ -70,100 +91,16 @@ export function setClickedStyle(elementId){
 }
 
 
-function addSidebarListeners(){
-  document.getElementById('new-list-btn').addEventListener('click', () => {
-    openOverlay();
-    renderNewListForm();
-  });
-
-
-  document.getElementById('all-btn').addEventListener('click', () => {
-    setClickedStyle('all-btn');
-    document.getElementById('content').innerHTML = '';
-    lists.forEach((list) => {
-      renderContent(list);
-      renderTasks(list);
-    });
-    renderMainContent('ALL');
-    document.querySelectorAll('.list-title').forEach((header) =>{
-      console.log(header);
-      header.style.fontWeight = '500';
-    });
-
-  });
-
-  document.getElementById('today-btn').addEventListener('click', () => {
-    document.getElementById('content').innerHTML = '';
-    setClickedStyle('today-btn');
-    lists.forEach((list) => {
-      renderContent(list);
-      renderTasks(list);
-      
-      showOnlyTodayTasks(list);
-    });
-    renderMainContent('TODAY');
-
-    lists.forEach((list) => {
-      updateListInfo(list);
-    });
-    
-    document.querySelectorAll('.list-title').forEach((header) =>{
-      console.log(header);
-      header.style.fontWeight = '500';
-    });
-  });
-
-}
-
-
-export function showOnlyTodayTasks(list){
-  const today = new Date();
-  const todaysDate = format(today, 'yyyy-MM-dd');
-  
-  list._tasks.forEach((task, index) => {
-    const taskDate = task._dueDate;
-    if(taskDate === ''){
-      document.getElementById(`task-content-uncomplete-${index}-${list._title}`).style.display = 'none';
-    }
-    else if (taskDate !== todaysDate){
-      document.getElementById(`task-content-uncomplete-${index}-${list._title}`).style.display = 'none';
-    }
-    
-  })
-
-  list._completedTasks.forEach((task, index) => {
-    const taskDate = task._dueDate;
-    if(taskDate === ''){
-      document.getElementById(`task-content-complete-${index}-${list._title}`).style.display = 'none';
-    }
-    else if (taskDate !== todaysDate){
-      document.getElementById(`task-content-complete-${index}-${list._title}`).style.display = 'none';
-    }
-  })
-}
-
-
-export function renderMainContent(title){
-  
-  const mainTitle = document.createElement('h1');
-  mainTitle.textContent = title;
-  mainTitle.setAttribute('id', `main-list-title`);
-  mainTitle.classList.add('main-list-title');
-
-  document.getElementById('main-list-header-container').appendChild(mainTitle);
-
-
-}
-
 
 export function updateTaskCount(list){
   let listIndex;
   const listTitle = list._title;
-  
+
   lists.forEach((l, index) =>{
     if(l._title === listTitle){
       listIndex = index;
     }
   })
+  
   document.getElementById(`list-task-count-${listIndex}`).textContent = list._tasks.length;
 }
