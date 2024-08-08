@@ -151,6 +151,7 @@ export function renderNewListForm(){
 
   const nameInput = document.createElement('input');
   nameInput.setAttribute('id', 'list-name-input');
+  nameInput.placeholder = 'Enter List Name';
 
   const errorMsg = document.createElement('div');
   errorMsg.setAttribute('id', 'list-name-error-msg');

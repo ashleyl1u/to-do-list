@@ -15,6 +15,5 @@ lists.forEach((list) => {
 });
 renderMainContent('ALL');
 document.querySelectorAll('.list-title').forEach((header) =>{
-  console.log(header);
   header.style.fontWeight = '500';
 });

@@ -19,6 +19,8 @@
 #new-list-form label{
   font-size: 14px;
   margin-bottom: 3px;
+  font-weight: 500;
+  color: var(--grey-9);
 }
 
 #new-list-form #list-name-input{
