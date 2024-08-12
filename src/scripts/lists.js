@@ -1,9 +1,8 @@
-import { renderTasks} from "./tasks";
 import { setClickedStyle } from "./side-bar";
 import { renderListContent, renderAllListContent } from "./content";
 import { renderTaskForm } from "./forms";
+
 import deleteIcon from '../icons/delete.svg';
-import '../styles/list-form.css';
 import addIcon from '../icons/add.svg';
 
 
@@ -42,7 +41,7 @@ export class List {
 
 export let lists = JSON.parse(localStorage.getItem('lists')) === null ? [] : JSON.parse(localStorage.getItem('lists'));
 
-function updateLocalStorage(){
+export function updateLocalStorage(){
   localStorage.setItem('lists', JSON.stringify(lists));
 }
 

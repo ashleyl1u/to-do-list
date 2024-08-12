@@ -1,11 +1,12 @@
 
-import { renderLists , lists, renderListHeader } from "./lists";
+import { renderLists , lists } from "./lists";
 import { renderNewListForm} from './forms';
-import {  renderTasks} from "./tasks";
-import { renderListContent, renderAllListContent, renderTodayListContent} from "./content";
+import { renderAllListContent, renderTodayListContent} from "./content";
+
 import '../styles/side-bar.css';
+
 import addIcon from '../icons/add.svg';
-import {format} from 'date-fns';
+
 
 export function renderSideBar() {
   const sidebarTop = document.createElement('div');

@@ -1,8 +1,7 @@
-
-import {  } from "./tasks";
 import { renderTasks } from "./tasks";
 import { lists , renderListHeader} from "./lists";
 import { setClickedStyle } from "./side-bar";
+
 import { format } from "date-fns";
 
 
@@ -114,7 +113,6 @@ export function updateListInfo(list){
     }
   }
 
-  console.log((`list-info-${list._title}`));
   document.getElementById(`list-info-${list._title}`).textContent = `${taskRemaining} Tasks Remaining · ${taskCompleted} Completed`;
 
 

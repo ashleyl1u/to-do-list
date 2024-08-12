@@ -1,8 +1,9 @@
 import '../styles/overlay.css';
 import '../styles/list-form.css';
-import { addNewList, lists , renderLists} from './lists';
-import { renderTasks, addNewTask, updateTask , Task} from './tasks';
-import { updateTaskCount } from './side-bar';
+import '../styles/task-form.css';
+
+import { addNewList, lists , renderLists, updateLocalStorage} from './lists';
+import { addNewTask, updateTask , Task} from './tasks';
 import { updateListInfo, showOnlyTodayTasks} from './content';
 
 
@@ -235,7 +236,7 @@ function addTaskFormListeners(list, taskToUpdate){
         
       }
 
-      localStorage.setItem('lists', JSON.stringify(lists));
+      updateLocalStorage();
       
       //for showing only the today elements
       const mainListTitle = document.getElementById('main-list-title');

@@ -1,5 +1,6 @@
-import './styles/main.css';
 import { renderAllListContent } from './scripts/content';
+
+import './styles/main.css';
 
 
 

@@ -1,14 +1,15 @@
 
-import '../styles/tasks.css';
-import { openOverlay, closeOverlay, renderTaskForm} from './forms';
-import { lists, renderLists } from './lists';
-import {format} from 'date-fns';
+import {  renderTaskForm} from './forms';
+import {  updateLocalStorage } from './lists';
+import {updateTaskCount} from './side-bar';
+import { updateListInfo} from './content';
 
-import {setClickedStyle, updateTaskCount} from './side-bar';
-import { showOnlyTodayTasks, updateListInfo} from './content';
-import '../styles/task-form.css';
+import '../styles/tasks.css';
+
 import editIcon from '../icons/edit.svg';
 import deleteIcon from '../icons/delete.svg';
+
+import {format} from 'date-fns';
 
 export class Task{
   constructor(title, note = '', dueDate = ''){
@@ -42,18 +43,6 @@ export class Task{
   }
 
 }
-
-
-export function formatDate (dueDate){
-  if(dueDate === ''){
-    return '';
-  }
-  const dateInfo = dueDate.split('-');
-  
-  const date = new Date(dateInfo[0], dateInfo[1]-1, dateInfo[2]);
-  return (format(date,'MMM d, yyyy'));
-}
-
 
 
 function renderATask(task, index, list, status){
@@ -150,25 +139,16 @@ function renderATask(task, index, list, status){
 function addListeners(list, checkboxStatus, taskStatus, index){
 
   document.getElementById(`checkbox-${index}-${checkboxStatus}-${list._title}`).addEventListener('click', () => {
-
-    updateTaskLists(index, checkboxStatus, list);
-    renderTasks(list);
-    localStorage.setItem('lists', JSON.stringify(lists));
     
+    updateCompleteUncompleteTasks(index, checkboxStatus, list);
     updateTaskCount(list);
     updateListInfo(list);
 
   });
 
   document.getElementById(`task-delete-btn-${checkboxStatus}-${index}-${list._title}`).addEventListener('click', () => {
-    if(checkboxStatus === 'unchecked'){
-      list._tasks.splice(index,1);
-    }
-    else{
-      list._completedTasks.splice(index,1);
-    }
-    renderTasks(list);
-    localStorage.setItem('lists', JSON.stringify(lists));
+
+    deleteTask(checkboxStatus, list); 
     updateTaskCount(list);
     updateListInfo(list);
   });
@@ -179,16 +159,15 @@ function addListeners(list, checkboxStatus, taskStatus, index){
     renderTaskForm(list, 'update', task[index]);
   });
 
-  document.getElementById(`task-content-${taskStatus}-${index}-${list._title}`).addEventListener('mouseover', () => {
-
+  document.getElementById(`task-content-${taskStatus}-${index}-${list._title}`).addEventListener('mouseover', (e) => {
     const btnContainer = document.getElementById(`btn-container-${list._title}-${taskStatus}-${index}`);
-    btnContainer.style.display = 'flex';
+    btnContainerHoverEffect(e, btnContainer);
   });
 
-  document.getElementById(`task-content-${taskStatus}-${index}-${list._title}`).addEventListener('mouseout', () => {
-
+  document.getElementById(`task-content-${taskStatus}-${index}-${list._title}`).addEventListener('mouseout', (e) => {
+  
     const btnContainer = document.getElementById(`btn-container-${list._title}-${taskStatus}-${index}`);
-    btnContainer.style.display = 'none';
+    btnContainerHoverEffect(e, btnContainer);
   });
 
 }
@@ -212,6 +191,14 @@ export function renderTasks (list) {
   
 }
 
+function deleteTask (checkboxStatus, list){
+  checkboxStatus === 'unchecked' ? list._tasks.splice(index,1) : list._completedTasks.splice(index,1);
+
+  updateLocalStorage();
+
+  renderTasks(list);
+  
+}
 
 
 export function addNewTask(list, newTask){
@@ -231,7 +218,7 @@ export function updateTask(task, newTaskTitle, newTaskNote, newTaskDueDate, list
 }
 
 
-function updateTaskLists(index, status, list) {
+function updateCompleteUncompleteTasks(index, status, list) {
   let removeArr;
   let addArr;
 
@@ -246,10 +233,26 @@ function updateTaskLists(index, status, list) {
 
   const removedTask = removeArr.splice(index, 1);
   addArr.push(removedTask[0]);
+
+  updateLocalStorage();
+
+  renderTasks(list);
+
 }
 
 
 
+function btnContainerHoverEffect(e, btnContainer){
+  e.type === 'mouseover' ? btnContainer.style.display = 'flex': btnContainer.style.display = 'none';
+}
 
 
-
+export function formatDate (dueDate){
+  if(dueDate === ''){
+    return '';
+  }
+  const dateInfo = dueDate.split('-');
+  
+  const date = new Date(dateInfo[0], dateInfo[1]-1, dateInfo[2]);
+  return (format(date,'MMM d, yyyy'));
+}
