@@ -1,7 +1,7 @@
 
 import {  renderTaskForm} from './forms';
 import {  updateLocalStorage } from './lists';
-import {updateTaskCount} from './side-bar';
+import {setClickedStyle, updateTaskCount} from './side-bar';
 import { updateListInfo} from './content';
 
 import '../styles/tasks.css';
@@ -51,7 +51,6 @@ function renderATask(task, index, list, status){
 
   const taskContent = document.createElement('div');
   taskContent.classList.add('task-content');
-  taskContent.classList.add(`task-content-${list._title}`);
 
   if(status === 'complete'){
     taskContent.classList.add('complete');
@@ -69,7 +68,6 @@ function renderATask(task, index, list, status){
   taskContentMain.classList.add('task-main-content');
 
   const checkbox = document.createElement('div');
-  checkbox.classList.add( `checkbox-${checkboxStatus}-${list._title}`);
   checkbox.classList.add( `checkbox-${checkboxStatus}`);
   checkbox.setAttribute('id', `checkbox-${index}-${checkboxStatus}-${list._title}`);
 
@@ -109,7 +107,6 @@ function renderATask(task, index, list, status){
   const deleteImg = new Image();
   deleteImg.src = deleteIcon;
   taskDeleteBtn.appendChild(deleteImg);
-  taskDeleteBtn.classList.add(`task-delete-btn-${list._title}`);
   taskDeleteBtn.classList.add(`task-delete-btn`);
   taskDeleteBtn.setAttribute('id', `task-delete-btn-${checkboxStatus}-${index}-${list._title}`);
 
@@ -117,7 +114,6 @@ function renderATask(task, index, list, status){
   const editImg = new Image ();
   editImg.src = editIcon;
   taskEditBtn.appendChild(editImg);
-  taskEditBtn.classList.add(`task-edit-btn-${list._title}`);
   taskEditBtn.classList.add(`task-edit-btn`);
   taskEditBtn.setAttribute('id', `task-edit-btn-${checkboxStatus}-${index}-${list._title}`);
 
@@ -206,6 +202,7 @@ export function addNewTask(list, newTask){
   renderTasks(list);
   updateTaskCount(list);
   updateListInfo(list);
+  
 }
 
 export function updateTask(task, newTaskTitle, newTaskNote, newTaskDueDate, list){

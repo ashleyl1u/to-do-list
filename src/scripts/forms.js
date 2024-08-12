@@ -106,7 +106,7 @@ function addNewListListeners() {
       resetForm('new-list-form');
       closeOverlay();
       addNewList(listName);
-      renderLists();
+      
     }
     
   });

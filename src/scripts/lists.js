@@ -133,16 +133,13 @@ export function addNewList (listName){
   lists.push(newList);
   localStorage.setItem('lists', JSON.stringify(lists));
   renderListContent(newList);
+  setClickedStyle(lists.length-1);
 }
 
 
 
 export function renderListHeader(list) {
   const listContentContainer = document.createElement('div');
-
-  const mainListTitle = document.createElement('div');
-  mainListTitle.setAttribute('id', 'main-list-header-container');
-  listContentContainer.appendChild(mainListTitle);
   
   const tasksHeader = document.createElement('div');
   tasksHeader.classList.add('tasks-header');

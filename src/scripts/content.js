@@ -13,16 +13,15 @@ export function renderListContent(list){
 
 export function renderAllListContent(){
   setClickedStyle('all-btn');
-  document.getElementById('content').innerHTML='';
+
+  document.getElementById('content').innerHTML = '';
   lists.forEach((list) => {
     renderListHeader(list);
     renderTasks(list);
   });
   renderContentHeader('ALL');
 
-  document.querySelectorAll('.list-title').forEach((header) =>{
-    header.style.fontWeight = '500';
-  });
+  styleMainListContent();
 }
 
 
@@ -33,21 +32,27 @@ export function renderTodayListContent(){
     lists.forEach((list) => {
       renderListHeader(list);
       renderTasks(list);
-      showOnlyTodayTasks(list);
+      
     });
     renderContentHeader('TODAY');
 
     lists.forEach((list) => {
+      showOnlyTodayTasks(list);
       updateListInfo(list);
     });
     
-    document.querySelectorAll('.list-title').forEach((header) =>{
-      header.style.fontWeight = '500';
-    });
+    styleMainListContent();
 
 }
 
+function styleMainListContent(){
+  document.querySelectorAll('.list-title').forEach((header) =>{
+    header.style.fontWeight = '500';
+  });
+}
+
 function renderContentHeader(title){
+  resetContentDiv();
   const mainTitle = document.createElement('h1');
   mainTitle.textContent = title;
   mainTitle.setAttribute('id', `main-list-title`);
@@ -55,6 +60,14 @@ function renderContentHeader(title){
 
   document.getElementById('main-list-header-container').appendChild(mainTitle);
 
+}
+
+function resetContentDiv(){
+  document.getElementById('content').innerHTML = '';
+
+  const mainListTitle = document.createElement('div');
+  mainListTitle.setAttribute('id', 'main-list-header-container');
+  document.getElementById('content').appendChild(mainListTitle);
 }
 
 
