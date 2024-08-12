@@ -1,7 +1,7 @@
 import '../styles/overlay.css';
 import '../styles/list-form.css';
 import { addNewList, lists , renderLists} from './lists';
-import { renderTasks, addNewTask, updateTask } from './tasks';
+import { renderTasks, addNewTask, updateTask , Task} from './tasks';
 import { updateTaskCount } from './side-bar';
 import { updateListInfo, showOnlyTodayTasks} from './content';
 
@@ -69,8 +69,7 @@ export function renderNewListForm(){
   newListForm.appendChild(formTop);
   newListForm.appendChild(formBottom);
 
-  document.getElementById('overlay').innerHTML ='';
-  document.getElementById('overlay').appendChild(newListForm);
+  addFormToOverlay(newListForm);
 
   addNewListListeners();
 }
@@ -88,7 +87,6 @@ function addNewListListeners() {
     let errorFlag = false;
 
     lists.forEach((list) => {
-      
       if(list._title === listName){
         displayErrorMsg('*List Already Exists', 'list-name-error-msg', 'list-name-input');
         errorFlag = true;
@@ -113,8 +111,7 @@ function addNewListListeners() {
   });
 
   document.getElementById('list-name-input').addEventListener('focus', () => {
-    document.getElementById('list-name-error-msg').textContent = '';
-    document.getElementById('list-name-input').style.outlineColor = 'var(--grey-8)';
+    removeErrorDisplay('list-name-error-msg', 'list-name-input');
   });
 }
 
@@ -131,7 +128,7 @@ export function renderTaskForm(list, type, taskToUpdate){
   taskFormBottom.setAttribute('id', 'task-form-bottom');
 
   const newTaskFormTitle = document.createElement('h1');
-  newTaskFormTitle.textContent = 'New Task';
+  newTaskFormTitle.setAttribute('id', 'task-form-title');
 
   const taskTitleLabel = document.createElement('label');
   taskTitleLabel.textContent = 'Tasks';
@@ -179,14 +176,7 @@ export function renderTaskForm(list, type, taskToUpdate){
   updateBtn.setAttribute('name', 'action');
   updateBtn.setAttribute('value', 'update');
 
-  if(type === 'add'){
-    submitBtn.style.display = 'block';
-    updateBtn.style.display = 'none';
-  }
-  if (type === 'update'){
-    submitBtn.style.display = 'none';
-    updateBtn.style.display = 'block';
-  }
+  
 
   btnContainer.appendChild(cancelBtn);
   btnContainer.appendChild(submitBtn);
@@ -205,12 +195,13 @@ export function renderTaskForm(list, type, taskToUpdate){
   newTaskForm.appendChild(taskFormTop);
   newTaskForm.appendChild(taskFormBottom);
 
+  addFormToOverlay(newTaskForm);
+  
 
-  document.getElementById('overlay').innerHTML ='';
-  document.getElementById('overlay').appendChild(newTaskForm);
-
+  modifyTaskFormToType(type, taskToUpdate);
   addTaskFormListeners(list, taskToUpdate);
 }
+
 
 function addTaskFormListeners(list, taskToUpdate){
   document.getElementById('task-cancel-btn').addEventListener('click',() => {
@@ -239,8 +230,6 @@ function addTaskFormListeners(list, taskToUpdate){
 
       if (action === 'update'){
         updateTask(taskToUpdate, taskTitle, taskNote, taskDueDate, list);
-
-        
         resetForm('task-form');
         closeOverlay();
         
@@ -248,6 +237,7 @@ function addTaskFormListeners(list, taskToUpdate){
 
       localStorage.setItem('lists', JSON.stringify(lists));
       
+      //for showing only the today elements
       const mainListTitle = document.getElementById('main-list-title');
       if(mainListTitle !== null){
         if(mainListTitle.textContent === 'TODAY'){
@@ -255,9 +245,9 @@ function addTaskFormListeners(list, taskToUpdate){
         }
       }
 
-      lists.forEach((list) => {
-        updateListInfo(list);
-      });
+      //displays the list info and updates it 
+      updateListInfo(list);
+     
       
     }
     
@@ -265,10 +255,45 @@ function addTaskFormListeners(list, taskToUpdate){
 
 
   document.getElementById('task-title-input').addEventListener('focus', () => {
-    document.getElementById('task-title-error-msg').textContent = '';
-    document.getElementById('task-title-input').style.outlineColor = 'var(--grey-8)';
+    removeErrorDisplay('task-title-error-msg', 'task-title-input');
   })
 
+}
+
+
+function addFormToOverlay(form) {
+  document.getElementById('overlay').innerHTML ='';
+  document.getElementById('overlay').appendChild(form);
+}
+
+function modifyTaskFormToType(type, taskToUpdate){
+  const submitBtn = document.getElementById('task-submit-btn');
+  const updateBtn = document.getElementById('task-update-btn');
+  const taskFormTitle = document.getElementById('task-form-title');
+
+  if(type === 'add'){
+    taskFormTitle.textContent = 'New Task';
+    submitBtn.style.display = 'block';
+    updateBtn.style.display = 'none';
+  }
+  if (type === 'update'){
+    taskFormTitle.textContent = 'Update Task';
+    submitBtn.style.display = 'none';
+    updateBtn.style.display = 'block';
+    fillInUpdateTaskForm(taskToUpdate);
+  }
+}
+
+
+function fillInUpdateTaskForm (taskInfo){
+  document.getElementById('task-title-input').value = taskInfo._title;
+  document.getElementById('task-note-input').value = taskInfo._note;
+  document.getElementById('task-date-input').value = taskInfo._dueDate;
+}
+
+function removeErrorDisplay(errorMsgElement, inputElement){
+  document.getElementById(errorMsgElement).textContent = '';
+  document.getElementById(inputElement).style.outlineColor = 'var(--grey-8)';
 }
 
 function displayErrorMsg(msg, errorDiv, inputElement){

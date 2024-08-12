@@ -1,7 +1,7 @@
 
-import { renderLists , lists } from "./lists";
+import { renderLists , lists, renderListHeader } from "./lists";
 import { renderNewListForm} from './forms';
-import { renderListHeader , renderTasks} from "./tasks";
+import {  renderTasks} from "./tasks";
 import { renderListContent, renderAllListContent, renderTodayListContent} from "./content";
 import '../styles/side-bar.css';
 import addIcon from '../icons/add.svg';

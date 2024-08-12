@@ -1,8 +1,10 @@
-import { renderListHeader , renderTasks} from "./tasks";
+import { renderTasks} from "./tasks";
 import { setClickedStyle } from "./side-bar";
 import { renderListContent, renderAllListContent } from "./content";
+import { renderTaskForm } from "./forms";
 import deleteIcon from '../icons/delete.svg';
 import '../styles/list-form.css';
+import addIcon from '../icons/add.svg';
 
 
 export class List {
@@ -43,6 +45,11 @@ export let lists = JSON.parse(localStorage.getItem('lists')) === null ? [] : JSO
 function updateLocalStorage(){
   localStorage.setItem('lists', JSON.stringify(lists));
 }
+
+
+
+
+
 
 
 export function renderLists() {
@@ -111,8 +118,6 @@ function addListListeners(){
       taskCount.style.display = 'block';
     });
   });
-
-
 }
 
 function removeList(index) {
@@ -131,3 +136,94 @@ export function addNewList (listName){
   renderListContent(newList);
 }
 
+
+
+export function renderListHeader(list) {
+  const listContentContainer = document.createElement('div');
+
+  const mainListTitle = document.createElement('div');
+  mainListTitle.setAttribute('id', 'main-list-header-container');
+  listContentContainer.appendChild(mainListTitle);
+  
+  const tasksHeader = document.createElement('div');
+  tasksHeader.classList.add('tasks-header');
+
+  const listName = document.createElement('h1');
+  listName.textContent = list._title;
+  listName.classList.add('list-title');
+
+
+  const newTaskBtn = document.createElement('button');
+  const addImg = new Image();
+  addImg.src = addIcon;
+  addImg.classList.add('add-icon');
+  newTaskBtn.setAttribute('id',`new-task-btn-${list._title}`);
+  newTaskBtn.classList.add('new-task-btn');
+  newTaskBtn.textContent += '+';
+
+  tasksHeader.appendChild(listName);
+  tasksHeader.appendChild(newTaskBtn);
+
+  listContentContainer.appendChild(tasksHeader);
+
+  const taskContainer = document.createElement('div');
+  taskContainer.setAttribute('id',  `uncompleted-task-container-${list._title}`);
+
+  const completedTaskContainer = document.createElement('div');
+  completedTaskContainer.setAttribute('id', `completed-task-container-${list._title}`);
+  completedTaskContainer.style.display = 'none';
+
+  
+  const listInfoContainer = document.createElement('div');
+  listInfoContainer.classList.add('list-info-container');
+  
+  const listInfo = document.createElement('div');
+  listInfo.setAttribute('id', `list-info-${list._title}`);
+  listInfo.textContent = `${list._tasks.length} Tasks Remaining · ${list._completedTasks.length} Completed`;
+  listInfo.classList.add('list-info');
+
+
+  const showHideBtn = document.createElement('button');
+  showHideBtn.textContent = 'show';
+  showHideBtn.setAttribute('id',`show-hide-btn-${list._title}`);
+  showHideBtn.classList.add('show-hide-btn');
+
+  listInfoContainer.appendChild(listInfo);
+  listInfoContainer.appendChild(showHideBtn);
+  listContentContainer.appendChild(listInfoContainer);
+
+  listContentContainer.appendChild(taskContainer);
+  listContentContainer.appendChild(completedTaskContainer);
+
+  document.getElementById('content').appendChild(listContentContainer);
+
+
+
+  addContentListeners(list);
+
+
+}
+
+
+
+function addContentListeners(list){
+
+  document.getElementById(`new-task-btn-${list._title}`).addEventListener('click', () => {
+    renderTaskForm(list, 'add', 'n/a');
+  });
+
+  document.getElementById(`show-hide-btn-${list._title}`).addEventListener('click', () => {
+    showHideTasks(list);
+  });
+ 
+}
+
+
+function showHideTasks(list){
+  const completedTaskContainer = document.getElementById(`completed-task-container-${list._title}`);
+  const showHideBtn = document.getElementById(`show-hide-btn-${list._title}`);
+  const listStatus = showHideBtn.textContent;
+
+  listStatus === 'show' ? completedTaskContainer.style.display = 'block' : completedTaskContainer.style.display = 'none';
+  listStatus === 'show' ? showHideBtn.textContent = 'hide': showHideBtn.textContent = 'show';
+}
