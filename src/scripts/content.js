@@ -14,12 +14,11 @@ export function renderListContent(list){
 export function renderAllListContent(){
   setClickedStyle('all-btn');
 
-  document.getElementById('content').innerHTML = '';
+  renderContentHeader('ALL');
   lists.forEach((list) => {
     renderListHeader(list);
     renderTasks(list);
   });
-  renderContentHeader('ALL');
 
   styleMainListContent();
 }
@@ -28,15 +27,10 @@ export function renderAllListContent(){
 export function renderTodayListContent(){
     setClickedStyle('today-btn');
 
-    document.getElementById('content').innerHTML = '';
+    renderContentHeader('TODAY');
     lists.forEach((list) => {
       renderListHeader(list);
       renderTasks(list);
-      
-    });
-    renderContentHeader('TODAY');
-
-    lists.forEach((list) => {
       showOnlyTodayTasks(list);
       updateListInfo(list);
     });
